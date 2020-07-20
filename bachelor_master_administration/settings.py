@@ -11,9 +11,79 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import saml2
+from django.conf import settings
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMPLATE_DIR = (os.path.join(BASE_DIR, 'templates'))
+
+SAML_CONFIG = {
+    'xmlsec_binary': '/usr/bin/xmlsec1',
+    'entityid': 'http://localhost:8000/saml2/metadata/',
+    'service': {
+      'sp': {
+            'name': 'Django sample SP',
+            'endpoints': {
+                # url and binding to the assetion consumer service view
+                # do not change the binding or service name
+                'assertion_consumer_service': [
+                  ('http://localhost:8000/saml2/acs/',
+                   saml2.BINDING_HTTP_POST),
+                ],
+                # url and binding to the single logout service view
+                # do not change the binding or service name
+                'single_logout_service': [
+                    ('http://localhost:8000/saml2/ls/',
+                    saml2.BINDING_HTTP_REDIRECT),
+                ],
+            },
+        },
+    },
+    # where the remote metadata is stored
+    'metadata': {
+        'remote': [
+            {
+                "url": "https://login.aaiedu.hr/sso/module.php/aggregator/?id=aaieduhr_fedlab&mimetype=application",  # lab
+                #"url": "https://login.aaiedu.hr/sso/idp_riteh.xml",  # production
+                "cert": "https://login.aaiedu.hr/sso/module.php/saml/idp/certs.php/idp.crt"
+            }
+        ],
+        #'local': [path.join('path', 'to', 'remote_metadata.xml')],  # local xml alternative
+    },
+
+    # set to 1 to output debugging information
+    #'debug': 1,
+
+    # certificate
+    'key_file': os.path.join(BASE_DIR, 'key.pem'),    # private part
+    'cert_file': os.path.join(BASE_DIR, 'cert.pem'),  # public part
+
+    # own metadata settings used by make_metadata.py
+    'contact_person': [
+        {
+        'given_name': 'Name',
+        'sur_name': 'Surname',
+        'company': 'Company',
+        'email_address': 'mail@example.com',
+        'contact_type': 'technical',
+        },
+        {
+        'given_name': 'Name',
+        'sur_name': 'Surname',
+        'company': 'Company',
+        'email_address': 'mail@example.com',
+        'contact_type': 'administrative',
+        },
+    ],
+    # you can set multilanguage information here
+    'organization': {
+        'name': [('Company', 'en'), ],
+        'display_name': [('CO', 'en'), ],
+        'url': [('http://www.example.com', 'en'), ],
+    },
+}
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -37,7 +107,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'administration',
 ]
+
+if DEBUG:
+    INSTALLED_APPS += ('mockdjangosaml2',)
+else:
+    INSTALLED_APPS += ('djangosaml2',)
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -54,7 +130,7 @@ ROOT_URLCONF = 'bachelor_master_administration.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATE_DIR,],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -69,6 +145,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'bachelor_master_administration.wsgi.application'
 
+AUTH_USER_MODEL = 'administration.User'
+
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
@@ -80,6 +158,15 @@ DATABASES = {
     }
 }
 
+AUTHENTICATION_BACKENDS = (
+    'bachelor_master_administration.backends.CustomSaml2Backend',
+
+    'django.contrib.auth.backends.ModelBackend',
+
+    #'djangosaml2.backends.Saml2Backend',
+
+    
+)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -118,3 +205,116 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+
+LOGIN_URL = '/saml2/login/'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+LOGIN_REDIRECT_URL = '/index/'
+LOGOUT_REDIRECT_URL = '/'
+
+SAML_DJANGO_USER_MAIN_ATTRIBUTE = 'username'
+SAML_CREATE_UNKNOWN_USER = True
+
+MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
+    'admin@riteh.hr': {
+        'password': 'admin',
+        'session_info': {
+            'ava': {
+                'hrEduPersonUniqueID': ['admin@riteh.hr'],
+                'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+                'cn': ['Admin Surname'],
+                'hrEduPersonOIB': ['12345678901'],
+                'sn': ['Surname'],
+                'hrEduPersonHomeOrg': ['riteh.hr'],
+                'mail': ['admin.surname@riteh.hr'],
+                'givenName': ['Admin']
+            },
+        },
+    },
+    'val@riteh.hr': {
+    'password': 'admin',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['val@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Admin Surname'],
+            'hrEduPersonOIB': ['12345678901'],
+            'sn': ['Surname'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['val.surname@riteh.hr'],
+            'givenName': ['Admin']
+            },
+        },
+    },
+    'admin@aai-test.hr': {
+        'password': 'admin',
+        'session_info': {
+            'ava': {
+                'hrEduPersonUniqueID': ['admin@aai-test.hr'],
+                'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+                'cn': ['Admin Surname'],
+                'hrEduPersonOIB': ['12345678901'],
+                'sn': ['Surname'],
+                'hrEduPersonHomeOrg': ['aai-test.hr'],
+                'mail': ['admin.surname@aai-test.hr'],
+                'givenName': ['Admin']
+            },
+        },
+    },
+    
+    'employee@aai-test.hr': {
+        'password': 'somepwd1',
+        'session_info': {
+            'ava': {
+                'hrEduPersonUniqueID': ['employee@aai-test.hr'],
+                'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+                'cn': ['Employee Surname'],
+                'hrEduPersonOIB': ['12345678902'],
+                'sn': ['Surname'],
+                'hrEduPersonHomeOrg': ['aai-test.hr'],
+                'mail': ['employee.surname@aai-test.hr'],
+                'givenName': ['Employee']
+            },
+        },
+    },
+    'student@aai-test.hr': {
+        'password': 'somepwd2',
+        'session_info': {
+            'ava': {
+                'hrEduPersonUniqueID': ['student@aai-test.hr'],
+                'hrEduPersonPrimaryAffiliation': ['student'],
+                'cn': ['Student Surname'],
+                'hrEduPersonOIB': ['12345678903'],
+                'sn': ['Surname'],
+                'hrEduPersonHomeOrg': ['aai-test.hr'],
+                'mail': ['student.surname@aai-test.hr'],
+                'givenName': ['Student']
+            },
+        },
+    },
+    'student1@aai-test.hr': {
+        'password': 'somepwd2',
+        'session_info': {
+            'ava': {
+                'hrEduPersonUniqueID': ['student1@aai-test.hr'],
+                'hrEduPersonPrimaryAffiliation': ['student'],
+                'cn': ['Student Surname'],
+                'hrEduPersonOIB': ['12345678901'],
+                'sn': ['Surname'],
+                'hrEduPersonHomeOrg': ['aai-test.hr'],
+                'mail': ['student1.surname@aai-test.hr'],
+                'givenName': ['Student1']
+            },
+        },
+    },
+}
+)
+
+SAML_ATTRIBUTE_MAPPING = {
+    'hrEduPersonUniqueID': ('username', ),
+    'mail': ('email', ),
+    'givenName': ('first_name', ),
+    'sn': ('last_name', ),
+
+}
