@@ -1,0 +1,49 @@
+{% extends nav %}
+
+{% block content %}
+<br>
+{% if student %}
+<div class="row card-panel">
+  	<h4 style="color: #2196f3" class="center">PROFIL: {{student.user.first_name}} {{student.user.last_name}}</h4>
+  	<hr>
+  	<div class="card-content" style=" height: 500px; overflow-y: scroll">
+		<h5>Detalji o korisniku:</h5>
+		<br>
+		<b>Adresa e-pošte: </b> {{student.user.email}}
+		<br> <br>
+		<b>Područje znanosti:</b> {{student.area_of_study}}
+		<br> <br>
+		<b>Vrsta studenta: </b> {{student.category}}
+		
+  	</div>
+</div>
+{% elif employee%}
+
+<div class="row card-panel">
+  	<h4 style="color: #2196f3" class="center">PROFIL: {{employee.user.first_name}} {{employee.user.last_name}}</h4>
+  	<hr>
+  	<div class="card-content" style=" height: 500px; overflow-y: scroll">
+		<h5>Detalji o korisniku:</h5>
+		<br>
+		<b>Adresa e-pošte: </b> {{employee.user.email}}
+		<br> <br>
+		<b>Uloge u sustavu:</b> 
+		<br>
+		{% for i in employee.roles.all %}
+			{{i}} <br>
+		{% endfor %}
+		<br> <br>
+  	</div>
+</div>
+{% else %}
+<div class="row card-panel">
+  	<h4 style="color: #2196f3" class="center">PROFIL: </h4>
+  	<hr>
+  	<div class="card-content" style=" height: 500px; overflow-y: scroll">
+		<h5>Nepostojeći profil</h5>
+
+  	</div>
+</div>
+{% endif %}
+
+{% endblock content %}
