@@ -1,0 +1,30 @@
+
+<div class="container">
+	Mentor i komentor će se automatski unijeti kao članovi povjerenstva za završne radove stoga je ovdje potrebno unesti još 2 dodatna člana.
+	<hr>
+	<form action="{% url "add_comitee" %}" method="post">
+
+		{% csrf_token %}
+		{{writer_form.thesis_id}}
+
+		<div class="row">	
+			<div class="col s6">
+
+			<label >{{writer_form.member1.label}}</label> 
+			{{writer_form.member1}}
+			</div>
+
+			<div class="col s6">
+
+			<label >{{writer_form.member2.label}}</label> 
+			{{writer_form.member2}}
+			</div>
+		</div>
+
+		<br><br><br><br><br><br><br><br><br><br><br><br>
+		<div class="col s4">				
+			<button class="waves-effect waves-light btn-large blue right" type="submit" name="action" value="Spremi">DODAJ ČLANOVE</button>
+		</div>
+	</form>
+	<br><br>
+</div>

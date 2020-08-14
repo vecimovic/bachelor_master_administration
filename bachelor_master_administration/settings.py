@@ -11,9 +11,81 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import saml2
+from django.conf import settings
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMPLATE_DIR = (os.path.join(BASE_DIR, 'templates'))
+
+LANGUAGE_CODE = 'hr-HR'
+
+SAML_CONFIG = {
+    'xmlsec_binary': '/usr/bin/xmlsec1',
+    'entityid': 'http://localhost:8000/saml2/metadata/',
+    'service': {
+      'sp': {
+            'name': 'Django sample SP',
+            'endpoints': {
+                # url and binding to the assetion consumer service view
+                # do not change the binding or service name
+                'assertion_consumer_service': [
+                  ('http://localhost:8000/saml2/acs/',
+                   saml2.BINDING_HTTP_POST),
+                ],
+                # url and binding to the single logout service view
+                # do not change the binding or service name
+                'single_logout_service': [
+                    ('http://localhost:8000/saml2/ls/',
+                    saml2.BINDING_HTTP_REDIRECT),
+                ],
+            },
+        },
+    },
+    # where the remote metadata is stored
+    'metadata': {
+        'remote': [
+            {
+                "url": "https://login.aaiedu.hr/sso/module.php/aggregator/?id=aaieduhr_fedlab&mimetype=application",  # lab
+                #"url": "https://login.aaiedu.hr/sso/idp_riteh.xml",  # production
+                "cert": "https://login.aaiedu.hr/sso/module.php/saml/idp/certs.php/idp.crt"
+            }
+        ],
+        #'local': [path.join('path', 'to', 'remote_metadata.xml')],  # local xml alternative
+    },
+
+    # set to 1 to output debugging information
+    #'debug': 1,
+
+    # certificate
+    'key_file': os.path.join(BASE_DIR, 'key.pem'),    # private part
+    'cert_file': os.path.join(BASE_DIR, 'cert.pem'),  # public part
+
+    # own metadata settings used by make_metadata.py
+    'contact_person': [
+        {
+        'given_name': 'Name',
+        'sur_name': 'Surname',
+        'company': 'Company',
+        'email_address': 'mail@example.com',
+        'contact_type': 'technical',
+        },
+        {
+        'given_name': 'Name',
+        'sur_name': 'Surname',
+        'company': 'Company',
+        'email_address': 'mail@example.com',
+        'contact_type': 'administrative',
+        },
+    ],
+    # you can set multilanguage information here
+    'organization': {
+        'name': [('Company', 'en'), ],
+        'display_name': [('CO', 'en'), ],
+        'url': [('http://www.example.com', 'en'), ],
+    },
+}
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -37,7 +109,26 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.admindocs',
+    'administration',
+    #'searchableselect',
+ 
 ]
+
+if DEBUG:
+    INSTALLED_APPS += ('mockdjangosaml2',)
+else:
+    INSTALLED_APPS += ('djangosaml2',)
+
+if DEBUG:
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = 1025
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
+    EMAIL_USE_TLS = True
+    DEFAULT_FROM_EMAIL = 'testing@example.com'
+    
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -54,7 +145,7 @@ ROOT_URLCONF = 'bachelor_master_administration.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATE_DIR,],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -71,6 +162,7 @@ WSGI_APPLICATION = 'bachelor_master_administration.wsgi.application'
 
 
 # Database
+
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
@@ -80,6 +172,15 @@ DATABASES = {
     }
 }
 
+AUTHENTICATION_BACKENDS = (
+    'bachelor_master_administration.backends.CustomSaml2Backend',
+
+    'django.contrib.auth.backends.ModelBackend',
+
+    #'djangosaml2.backends.Saml2Backend',
+
+    
+)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -105,7 +206,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Zagreb'
 
 USE_I18N = True
 
@@ -118,3 +219,328 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+
+LOGIN_URL = '/saml2/login/'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
+LOGIN_REDIRECT_URL = '/index/'
+LOGOUT_REDIRECT_URL = '/'
+
+SAML_DJANGO_USER_MAIN_ATTRIBUTE = 'username'
+SAML_CREATE_UNKNOWN_USER = True
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+
+
+MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
+    'vecimovic@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['vecimovic@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['student'],
+            'hrEduPersonScienceArea': ['računarstvo'],
+            'hrEduPersonStudentCategory': ['redoviti student:preddiplomski sveučilišni studij'],
+            'cn': ['Valentina Ecimović'],
+            'hrEduPersonUniqueNumber': ['12345678901'],
+            'sn': ['Ecimović'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['vecimovic@riteh.hr'],
+            'givenName': ['Valentina']
+            },
+        },
+    },
+    'acrnic@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['acrnic@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['student'],
+            'hrEduPersonScienceArea': ['računarstvo'],
+            'hrEduPersonStudentCategory': ['redoviti student:diplomski sveučilišni studij'],
+            'cn': ['Ankica Crnić'],
+            'hrEduPersonUniqueNumber': ['12345678901'],
+            'sn': ['Crnić'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['acrnic@riteh.hr'],
+            'givenName': ['Ankica']
+            },
+        },
+    },
+
+    'iecimovic@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['iecimovic@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['student'],
+            'hrEduPersonScienceArea': ['elektrotehnika'],
+            'hrEduPersonStudentCategory': ['redoviti student:preddiplomski sveučilišni studij'],
+            'cn': ['Ivan Ecimović'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Ecimović'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['iecimovic@riteh.hr'],
+            'givenName': ['Ivan']
+            },
+        },
+    },
+    'mcar@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['mcar@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['student'],
+            'hrEduPersonScienceArea': ['računarstvo'],
+            'hrEduPersonStudentCategory': ['redoviti student:preddiplomski sveučilišni studij'],
+            'cn': ['Marin Car'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Car'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['mcar@riteh.hr'],
+            'givenName': ['Marin']
+            },
+        },
+    },
+
+    'tmlinaric@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['tmlinaric@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['student'],
+            'hrEduPersonScienceArea': ['strojarstvo'],
+            'hrEduPersonStudentCategory': ['redoviti student:preddiplomski sveučilišni studij'],
+            'cn': ['Tina Mlinarić'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Mlinarić'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['tmlinaric@riteh.hr'],
+            'givenName': ['Tina']
+            },
+        },
+    },
+    'klenic@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['klenic@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Kristian Lenić'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Lenić'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['kristian.lenic@riteh.hr'],
+            'givenName': ['Kristian']
+            },
+        },
+    },
+    'nlovrin@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['nlovrin@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Neven Lovrin'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Lovrin'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['neven.lovrin@riteh.hr'],
+            'givenName': ['Neven']
+            },
+        },
+    },
+    'vmrzljak@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['vmrzljak@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Vedran Mrzljak'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Mrzljak'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['vedran.mrzljak@riteh.hr'],
+            'givenName': ['Vedran']
+            },
+        },
+    },
+    'azamarin@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['azamarin@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Albert Zamarin'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Zamarin'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['albert.zamarin@riteh.hr'],
+            'givenName': ['Albert']
+            },
+        },
+    },
+    'tmatulja@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['tmatulja@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Tin Matulja'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Matulja'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['tin.matulja@riteh.hr'],
+            'givenName': ['Tin']
+            },
+        },
+    },
+    'mvalcic@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['mvalcic@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Marko Valčić'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Valčić'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['marko.valcic@riteh.hr'],
+            'givenName': ['Marko']
+            },
+        },
+    },
+    'vsucic@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['vsucic@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Viktor Sučić'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Sučić'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['vsucic@riteh.hr'],
+            'givenName': ['Viktor']
+            },
+        },
+    },
+    'aviskovic@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['aviskovic@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Alfredo Višković'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Višković'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['alfredo.viskovic@riteh.hr'],
+            'givenName': ['Alfredo']
+            },
+        },
+    },
+    'bdobras@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['bdobras@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Branka Dobraš'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Dobraš'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['branka.dobras@riteh.hr'],
+            'givenName': ['Branka']
+            },
+        },
+    },
+    'klenac@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['klenac@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Kristijan Lenac'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Lenac'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['Kristijan.lenac@riteh.hr'],
+            'givenName': ['Kristijan']
+            },
+        },
+    },
+    'iipsic@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['iipsic@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Ivo Ipšić'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Ipšić'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['ivo.ipsic@riteh.hr'],
+            'givenName': ['Ivo']
+            },
+        },
+    },
+    'gmausa@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['gmausa@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Goran Mauša'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Mauša'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['goran.mausa@riteh.hr'],
+            'givenName': ['Goran']
+            },
+        },
+    },
+    'sljubic@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['sljubic@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Sandi Ljubić'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Ljubić'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['sandi.ljubic@riteh.hr'],
+            'givenName': ['Sandi']
+            },
+        },
+    },
+    'vkirincic@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['vkirincic@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Vedran Kirinčić'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Kirinčić'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['vedran.kirincic@riteh.hr'],
+            'givenName': ['Vedran']
+            },
+        },
+    },
+}
+)
+
+SAML_ATTRIBUTE_MAPPING = {
+    'hrEduPersonUniqueID': ('username', ),
+    'mail': ('email', ),
+    'givenName': ('first_name', ),
+    'sn': ('last_name', ),
+
+}

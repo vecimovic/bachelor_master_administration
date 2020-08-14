@@ -1,0 +1,28 @@
+<div class="container">
+	Provjeru izvornosti treba izvršiti pomoću softvera za provjeru autentičnosti Turnitin(<a href="https://www.turnitin.com/" target="_blank">www.turnitin.com</a>). Nakon što je izvještaj generiran i spreman za pregled, pojavit će se postotak potencijalnog plagijarizma koji je pronađen prilikom usporedbe. Kako bi mogli generirati obrazac o provjeri izvornosti potrebno je unijeti taj postotak i obrazloženje.
+	<hr>
+	<form  action="{% url "generate_verification" %}" method="post" formnovalidate>
+		{% csrf_token %}
+		{{mentor_form.thesis_id}}
+		<div class="row">
+			<br><br>
+			<div class="col s12">
+				<label>{{mentor_form.work_match.label}} <h6>Unijeti u obliku postotka(npr. 5%)</h6></label>
+
+				{{mentor_form.work_match}}<br>
+			</div>
+		</div>
+		<div class="row">
+			<br><br>
+			<div class="col s12">
+				<label>{{mentor_form.explanation.label}}</label> <br> <br>
+				{{mentor_form.explanation}}<br>
+			</div>
+		</div>
+		<br> <br>
+		<div class="col s4">				
+			<button class="waves-effect waves-light btn-large blue right" type="submit" name="action" value="Spremi"><div>GENERIRAJ OBRAZAC</div></button>
+		</div>
+	</form>
+	<br><br>
+</div>
