@@ -26,7 +26,7 @@ xmlsec1: http://www.aleksey.com/xmlsec/
 #### djangosaml2
 
 
-/home/valentina/anaconda3/envs/env_name/lib/python3.7/site-packages/djangosaml2/backends.py 
+##### /home/valentina/anaconda3/envs/env_name/lib/python3.7/site-packages/djangosaml2/backends.py 
 
 linija 119: Promijeniti 
 
@@ -38,7 +38,7 @@ linija 119: Promijeniti
     
 #### mockdjangosaml2
 
-/home/valentina/anaconda3/envs/env_name/lib/python3.7/site-packages/mockdjangosaml2/urls.py 
+##### /home/valentina/anaconda3/envs/env_name/lib/python3.7/site-packages/mockdjangosaml2/urls.py 
 
 Promijeniti
 
@@ -65,7 +65,7 @@ u
 		]
 
 	
-/home/valentina/anaconda3/envs/env_name/lib/python3.7/site-packages/mockdjangosaml2/views.py 
+##### /home/valentina/anaconda3/envs/env_name/lib/python3.7/site-packages/mockdjangosaml2/views.py 
 	
 linija 8 : Promijeniti
 
@@ -107,7 +107,7 @@ ispod linije 106( session_info = request.session['mock_session_info']):  Dodati
 
     session_info.update( {'issuer' : 'riteh'} )
 
-/home/valentina/anaconda3/envs/env_name/lib/python3.7/site-packages/mockdjangosaml2/settings.py
+##### /home/valentina/anaconda3/envs/env_name/lib/python3.7/site-packages/mockdjangosaml2/settings.py
 
 Dodati:
 
@@ -116,7 +116,7 @@ Dodati:
     STATIC_URL = '/static/'
 	  STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
- /home/valentina/anaconda3/envs/env_name/lib/python3.7/site-packages/mockdjangosaml2/templates/mockdjangosaml2/login.html
+##### /home/valentina/anaconda3/envs/env_name/lib/python3.7/site-packages/mockdjangosaml2/templates/mockdjangosaml2/login.html
  
  Dodati:
  
