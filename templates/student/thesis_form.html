@@ -1,0 +1,95 @@
+<br>		
+		<div class="row">
+			<div class="col s6">
+				<h4 style="color:#2196f3;">PREDAJA RADA: </h4> 	
+			</div>
+		<div class="col s6">
+		 	<span style="color:#2196f3;"><i onclick="cancel()" class="right material-icons medium">cancel</i></span>
+		</div>
+
+		
+		</div>
+			<hr>
+			<br>
+	    {% csrf_token %}
+	    <div class="row">
+	    	<div class="col s4">
+	    		<label>{{form.study.label}} :</label>
+	    		{{form.study}}<br>
+	    		<span style="color:red;">{{form.study.errors}}</span>
+	    	</div>
+	       	<div class="col s4">
+	    		<label>{{form.mentor.label}} :</label>
+	    		{{form.mentor}}<br>
+	    		<span style="color:red;">{{form.mentor.errors}}</span>
+	    	</div>
+	        <div class="col s4">
+	    		<label>{{form.komentor.label}} :</label>
+	    		{{form.komentor}} <br>
+	    		<span style="color:red;">{{form.komentor.errors}}</span>
+	    	</div>
+	    </div>
+
+		<div class="row">
+			<br>
+			<div class="col s6">
+				<label>{{form.title.label}} :</label>
+				{{form.title}}<br>
+	    		<span style="color:red;">{{form.title.errors}}</span>
+			</div>
+			<div class="col s6">
+				<label>{{form.title_english.label}} :</label>
+				{{form.title_english}}<br>
+	    		<span style="color:red;">{{form.title_english.errors}}</span>
+			</div>
+		</div>
+
+		<div class="row">
+			<br>
+			<div class="col s6">
+				<label>{{form.summary.label}} :</label>
+				{{form.summary}}<br>
+	    		<span style="color:red;">{{form.summary.errors}}</span>
+			</div>
+			<div class="col s6">
+				<label>{{form.summary_english.label}} :</label>
+				{{form.summary_english}}<br>
+	    		<span style="color:red;">{{form.summary_english.errors}}</span>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col s12">
+				<label>{{form.file.label}}(pdf):
+				<h6>(naziv: ime_prezime_vrsta-rada.pdf)</h6></label> 
+				 
+			 	{{form.file}}
+				<span style="color:red;">{{form.file.errors}}</span>
+			</div>
+			<br>
+		</div>
+
+		<div class="row">
+			<br>
+			<div class="col s12">
+				<label>{{form.remark.label}} :</label> <br>
+				{{form.remark}}
+			</div>
+		
+		</div>
+
+		<br>
+
+	<script type="text/javascript">
+	    function cancel() {
+	       if (confirm('Jeste li sigurni da želite odustati? \n \n Podaci/promjene neće biti sačuvane!')) {
+	           window.location.href = "{% url "index" %}";
+	       } 
+	    }
+	    function confirm_submission(){
+	    	if (confirm('Jeste li sigurni da želite predati rad?')) {
+	           thesis_form.submit()
+	       	} 
+	    }
+
+	</script>

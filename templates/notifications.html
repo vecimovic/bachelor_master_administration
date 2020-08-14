@@ -1,0 +1,47 @@
+
+{% extends nav %}
+{% block content %}
+
+
+<br>
+<div class="row card-panel">
+  <h2 style="color: #2196f3" class="center">Obavijesti</h2>
+  <hr>
+  <div class="col s4" style=" height: 500px; overflow-y: scroll">
+    <ul class="collection">
+
+    {% if notifications %}
+        
+      {% for i in notifications %}
+         <li class="collection-item card-panel" style="{% if i.status == 1 %} background-color:#ffcdd2;{% endif %}{% if i == notification %} background-color:#bdbdbd;{% endif %}"><div><b>{{i.title}}</b> <br> {{i.date | date:'d.m.Y.  H:j'}}<a href="{% url "notifications" %}?id={{i.id}}" class="secondary-content"><i class="material-icons" style="color:#2196f3;">send</i></a></div></li>
+      {% endfor %}
+  
+    {% else %}
+    <li class="collection-item card-panel">Nemate nijednu obavijest</li>
+    {% endif %}
+
+    </ul>
+  </div>
+  <div class="col s8" style="height: 500px; overflow-y: scroll">
+      {% if notification %}
+        <div class="card-panel" style="height: 98%">
+          <span class="black-text">
+            <h5>{{notification.title}}</h5>
+            <p>{{notification.date | date:'d.m.Y.  H:j'}}</p>
+
+            <br><p>{{notification.content |safe}}</p>
+          </span>
+        </div>
+      {% else %}
+        <div class="card-panel" style="height: 450px">
+          <span class="black-text">Odaberite obavijest na lijevoj strani da biste vidjeli više pojedinosti
+          </span>
+        </div>
+      {% endif %}
+  </div>
+</div>
+
+
+
+  
+{% endblock content %}

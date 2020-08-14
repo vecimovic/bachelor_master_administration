@@ -1,0 +1,25 @@
+{% extends "student/student_index.html" %}
+
+{% block content %}
+
+	<form id="thesis_form" action="{% url "update" thesis_id=thesis_id %}" method="post" enctype= "multipart/form-data">
+		
+			
+		{% block form_body %}
+		{% include "student/thesis_form.html" %}
+		{% endblock form_body %}
+
+		
+		<div class="row">
+			<div class="col s4">				
+				<button class="waves-effect waves-light btn-large blue" type="submit" name="action" value="Spremi">Spremi</button>
+			</div>
+			<div class="col s4">				
+				<button class="waves-effect waves-light btn-large blue" onclick="confirm_submission()" name="action" value="Predaj">Predaj</button>
+			</div>		
+		</div>
+		 
+	</form>
+
+{% endblock content %}
+

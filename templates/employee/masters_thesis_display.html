@@ -1,0 +1,88 @@
+{% if thesis %}
+	<table class="theses_display" class="display" style="width:100%">
+		<thead>
+            <tr>
+                <th>Autor</th>
+                <th>Naslov</th>
+                <th>Status</th>
+                <th>Članovi povjerenstva za obranu</th>
+                <th>Ocijena rada</th>
+            </tr>
+        </thead>
+        <tbody>
+		{% for i in thesis %}
+			{% if i.type == 2 and i.status > 3%}
+				
+			
+			<tr>
+				<td><a href="{% url "profile" user_id=i.author.user.id %}">{{i.author}} </a></td>
+				<td><a href="{% url "thesis_display" thesis_id=i.id %}">{{i.title}}</a></td>
+				<td style="{% if i.status == 6 or i.status == 9%}
+					color:red;
+					{% elif i.status == 7 %}
+						color:#ffa000 ;
+					{% else %}
+					color:green;
+
+					{% endif %}">
+					{{i.get_status_display}}<br>
+					{% if 'predsjednik' in role.get_id_display and i.status == 4 or i.status == 7 %}
+						<a class="modal-trigger" data-target="status_change" href="#status_change" data-t_id="{{i.id}}" id="{{i.id}}" >Promijeni status</a>
+					{% endif %}
+				</td>
+				<td>
+				{% if i.memberofthesiscomitee_set.all %}
+				
+					{% for j in i.memberofthesiscomitee_set.all%}
+						<a href="{% url "profile" user_id=j.employee.user.id %}"> {{j}} </a> <br>
+					{% endfor %}
+						
+				{% else %}
+
+					Nisu uneseni članovi <br>	
+					{% if 'djelovođa' in role.get_id_display and i.status == 5%}
+						<a class="modal-trigger" data-target="comitee" href="#comitee" data-td_id="{{i.id}}" id="{{i.id}}">Dodaj članove povjerenstva</a>
+					{% endif %}
+				{% endif %}
+				</td>  
+				<td>
+					{% if i.final_grade %}
+                		{{i.final_grade}}
+              		{% else %}
+               			 Nije unesena ocjena
+					{% endif %}
+				</td>
+			</tr>
+			{% endif %}
+		{% endfor %}
+		</tbody>
+        <tfoot>
+            <tr>
+                 <th>Autor</th>
+                <th>Naslov</th>
+                <th>Status</th>
+                <th>Članovi povjerenstva za obranu</th>
+                <th>Ocijena rada</th>
+            </tr>
+        </tfoot>
+    </table>
+
+
+{% else %}
+
+	<div class="row">
+		<div class="col s12">
+			<div class="card horizontal">
+				<div class="card-content">
+				    <p>Nije pronađen nijedan diplomski rad</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endif %} 
+
+
+
+
+

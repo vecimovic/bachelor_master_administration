@@ -1,0 +1,90 @@
+{% if thesis %}
+	<table class="theses_display" class="display" style="width:100%">
+		<thead>
+            <tr>
+                <th>Autor</th>
+                <th>Naslov</th>
+                <th>Vrsta rada</th>
+                <th>Status</th>
+                <th>Provjera Izvornosti </th>
+            </tr>
+        </thead>
+
+        <tbody>
+		{% for i in thesis %}
+			{% if i.status > 1 %}
+				
+			
+			<tr>
+				<td><a href="{% url "profile" user_id=i.author.user.id %}">{{i.author}} </a></td>
+				<td><a href="{% url "thesis_display" thesis_id=i.id %}">{{i.title}}</a></td>
+				<td>{{i.get_type_display}}</td>
+				<td style="{% if i.status == 6 or i.status == 9 %}
+					color:red;
+					{% elif i.status == 7 %}
+						color:#ffa000 ;
+					{% else %}
+					color:green;
+					{% endif %}">
+					{{i.get_status_display}} <br>
+					
+					{% if i.status == 2 and i.verification_of_authenticity and role.get_id_display == 'mentor' %}
+						
+						<form id="change_status" action="{% url "mentor_status_change" %}" method="post">
+							{% csrf_token %}
+			    		 	<input type="hidden" id="id" name="id" value="{{i.id}}">
+							<a href="javascript:{}" onclick="document.getElementById('change_status').submit(); return false;">Promijeni status u PROVJEREN</a>
+						</form>
+					{% endif %}
+				</td>
+
+				<td>        
+					{% if i.verification_of_authenticity %}
+						{% if role.get_id_display == 'mentor' %}
+							<a class="modal-trigger" href="#verification_modal" data-t_id1="{{i.id}}" id="{{i.id}}">Da</a><br>
+						{% else %}
+							Da <br>
+						{% endif %}
+						
+						Preuzmi: <a href="/media/{{i.verification_of_authenticity}}" target="_blank">{{i.verification_of_authenticity}}</a> 
+					{% else %}
+						{% if role.get_id_display == 'mentor' %}
+							<a class="modal-trigger" href="#verification_modal" data-t_id1="{{i.id}}" id="{{i.id}}">Ne</a>
+						{% else %}
+							Ne 
+						{% endif %}
+					{% endif %}
+
+				</td>
+			</tr>
+			{% endif %}
+	    {% endfor %}
+		</tbody>
+        <tfoot>
+            <tr>
+                 <th>Autor</th>
+                <th>Naslov</th>
+                <th>Vrsta rada</th>
+                <th>Status</th>
+                <th>Provjera izvornosti</th>
+            </tr>
+        </tfoot>
+    </table>
+
+{% else %}
+
+	<div class="row">
+		<div class="col s12">
+			<div class="card horizontal">
+				<div class="card-content">
+				    <p>Nije pronađen nijedan završni/diplomski rad</p>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endif %} 
+
+
+
+
+

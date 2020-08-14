@@ -1,0 +1,148 @@
+<!DOCTYPE>
+<html>
+    <head>
+        <title>Title</title>
+
+        
+        <style type="text/css">
+        @font-face {
+          font-family:'Liberation Sans';
+          src: url('{{BASE_DIR}}templates/verification_of_work_authenticity/fonts/LiberationSans-Regular.ttf');
+
+
+        }
+        @font-face {
+          font-family:'Liberation Sans Bold';
+          src: url('{{BASE_DIR}}templates/verification_of_work_authenticity/fonts/LiberationSans-Bold.ttf');
+
+  
+        }
+
+        @font-face {
+          font-family:'Liberation Sans Italic';
+          src: url('{{BASE_DIR}}templates/verification_of_work_authenticity/fonts/LiberationSans-Italic.ttf');
+
+  
+        }
+        @font-face {
+            font-family: 'Liberation Sans Bold Italic';
+            src: url('{{BASE_DIR}}templates/verification_of_work_authenticity/fonts/LiberationSans-BoldItalic.ttf');
+        }
+        body {
+                font-family: 'Liberation Sans';
+                font-weight: 200;
+                font-size: 14px;
+        }
+        b{
+            font-family:'Liberation Sans Bold';
+        }
+        i{
+            font-family:'Liberation Sans Italic';
+        }
+        .bi{
+            font-family: 'Liberation Sans Bold Italic';
+        }
+            .header {
+                font-size: 20px;
+                font-weight: 100;
+                text-align: center;
+            }
+            .title {
+                font-size: 14px;
+                font-weight: 100;
+               /* text-align: right;*/
+               padding: 10px 15px 0px 15px;  
+            }
+            .title span {
+                color: black;
+            }
+            .details {
+                padding: 10px 15px 0px 15px;
+
+                text-align: left !important;
+
+            }
+
+            .hrItem {
+                border: none;
+                height: 1px;
+                /* Set the hr color */
+                color: #333; /* old IE */
+                background-color: #fff; /* Modern Browsers */
+
+            }
+
+
+       
+        </style>
+               <meta charset="UTF-8">
+    </head>
+    <body>
+        <div class='wrapper'>
+            <div class='header'>
+                <br> 
+                <p class='title'><b>Potvrda o provedenom postupku provjere izvornosti rada</b></p>
+            </div>
+        <div>
+        <div class='details'>
+            <p>Nakon prihvaćanja konačne inačice završnog/diplomskog rada po provedenom postupku
+provjere izvornosti rada potvrđuje se sljedeće: </p>
+        <table border="1">
+            <tr>
+                <td width="30%"><b>Ime i prezime studenta:</b></td>
+                <td width="70%">{{name}} {{surname}}</td>
+            </tr>
+            <tr>
+                <td width="30%"><b>JMBAG:</b></td>
+                <td width="70%">{{jmbag}}</td>
+            </tr>
+            <tr>
+                <td width="30%"><b>Studij:</b></td>
+                <td width="70%">{{study}}</td>
+            </tr>
+            <tr>
+                <td width="30%"><b>Vrsta rada:</b></td>
+                <td width="70%">{{type}}</td>
+            </tr>
+            <tr>
+                <td width="30%"><b>Tema:</b> <br></td>
+                <td width="70%">{{title}}</td>
+            </tr>
+            <tr>
+                <td width="30%"><b>Datum provjere rada:</b></td>
+                <td width="70%">{{date}}</td>
+            </tr>
+            <tr>
+                <td width="30%"><b>Broj stranica:</b></td>
+                <td width="70%">{{num_of_pages}}</td>
+            </tr>
+            <tr>
+                <td width="30%"><b>Podudarnost rada:</b></td>
+                <td width="70%">{{work_match}}</td>
+            </tr>
+        </table><br>
+        <table border="0">
+                <tr  class="bi">
+                    <td width="30%">Datum: <u><i>{{date}}</i></u> <br></td>
+                    <td width="70%">Provjeru izvornosti izvršio: <u><i>{{mentor.first_name}}, {{mentor.last_name}} /&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i></u> <br> <i style="text-align:center;">(ime, prezime / potpis)</i></td>
+                </tr>
+            </table>
+        <br> 
+        <table border="1" style="border-width: 20px;">
+            <tr>
+                <td width="100%" height="300px"><b>Obrazloženje mentora:</b> <br>
+                {{explanation}}
+                <br> <br> </td>
+            </tr>
+        </table>
+        <br>
+        <table border="0">
+                <tr class="bi">
+                    <td width="30%">Datum: <u><i>{{date}}</i></u> <br></td>
+                    <td width="70%">Mentor: <u><i>{{mentor.first_name}}, {{mentor.last_name}} /&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</i></u><br> <i style="text-align:center;">(ime, prezime / potpis)</i></td>
+                </tr>
+            </table>
+    </div>
+    </div>
+    </body>
+</html>
