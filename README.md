@@ -23,6 +23,9 @@ mockdjangosaml2
 xmlsec1: http://www.aleksey.com/xmlsec/
  
 ### Promjene koje je potrebno izvršiti
+
+Dodati folder pod nazivom "media" u glavni direktorij projekta 
+
 #### djangosaml2
 
 
