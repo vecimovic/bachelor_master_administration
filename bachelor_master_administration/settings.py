@@ -18,6 +18,8 @@ from django.conf import settings
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATE_DIR = (os.path.join(BASE_DIR, 'templates'))
 
+LANGUAGE_CODE = 'hr-HR'
+
 SAML_CONFIG = {
     'xmlsec_binary': '/usr/bin/xmlsec1',
     'entityid': 'http://localhost:8000/saml2/metadata/',
@@ -107,13 +109,26 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.admindocs',
     'administration',
+    #'searchableselect',
+ 
 ]
 
 if DEBUG:
     INSTALLED_APPS += ('mockdjangosaml2',)
 else:
     INSTALLED_APPS += ('djangosaml2',)
+
+if DEBUG:
+    EMAIL_HOST = 'localhost'
+    EMAIL_PORT = 1025
+    EMAIL_HOST_USER = ''
+    EMAIL_HOST_PASSWORD = ''
+    EMAIL_USE_TLS = True
+    DEFAULT_FROM_EMAIL = 'testing@example.com'
+    
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -145,10 +160,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'bachelor_master_administration.wsgi.application'
 
-AUTH_USER_MODEL = 'administration.User'
-
 
 # Database
+
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
@@ -192,7 +206,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Zagreb'
 
 USE_I18N = True
 
@@ -216,6 +230,12 @@ LOGOUT_REDIRECT_URL = '/'
 SAML_DJANGO_USER_MAIN_ATTRIBUTE = 'username'
 SAML_CREATE_UNKNOWN_USER = True
 
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+
+
 MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
     'vecimovic@riteh.hr': {
     'password': '0000',
@@ -223,8 +243,10 @@ MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
         'ava': {
             'hrEduPersonUniqueID': ['vecimovic@riteh.hr'],
             'hrEduPersonPrimaryAffiliation': ['student'],
+            'hrEduPersonScienceArea': ['računarstvo'],
+            'hrEduPersonStudentCategory': ['redoviti student:preddiplomski sveučilišni studij'],
             'cn': ['Valentina Ecimović'],
-            'hrEduPersonOIB': ['12345678901'],
+            'hrEduPersonUniqueNumber': ['12345678901'],
             'sn': ['Ecimović'],
             'hrEduPersonHomeOrg': ['riteh.hr'],
             'mail': ['vecimovic@riteh.hr'],
@@ -232,14 +254,34 @@ MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
             },
         },
     },
+    'acrnic@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['acrnic@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['student'],
+            'hrEduPersonScienceArea': ['računarstvo'],
+            'hrEduPersonStudentCategory': ['redoviti student:diplomski sveučilišni studij'],
+            'cn': ['Ankica Crnić'],
+            'hrEduPersonUniqueNumber': ['12345678901'],
+            'sn': ['Crnić'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['acrnic@riteh.hr'],
+            'givenName': ['Ankica']
+            },
+        },
+    },
+
     'iecimovic@riteh.hr': {
     'password': '0000',
     'session_info': {
         'ava': {
             'hrEduPersonUniqueID': ['iecimovic@riteh.hr'],
             'hrEduPersonPrimaryAffiliation': ['student'],
+            'hrEduPersonScienceArea': ['elektrotehnika'],
+            'hrEduPersonStudentCategory': ['redoviti student:preddiplomski sveučilišni studij'],
             'cn': ['Ivan Ecimović'],
-            'hrEduPersonOIB': ['12345678902'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
             'sn': ['Ecimović'],
             'hrEduPersonHomeOrg': ['riteh.hr'],
             'mail': ['iecimovic@riteh.hr'],
@@ -253,8 +295,10 @@ MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
         'ava': {
             'hrEduPersonUniqueID': ['mcar@riteh.hr'],
             'hrEduPersonPrimaryAffiliation': ['student'],
+            'hrEduPersonScienceArea': ['računarstvo'],
+            'hrEduPersonStudentCategory': ['redoviti student:preddiplomski sveučilišni studij'],
             'cn': ['Marin Car'],
-            'hrEduPersonOIB': ['12345678902'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
             'sn': ['Car'],
             'hrEduPersonHomeOrg': ['riteh.hr'],
             'mail': ['mcar@riteh.hr'],
@@ -269,8 +313,10 @@ MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
         'ava': {
             'hrEduPersonUniqueID': ['tmlinaric@riteh.hr'],
             'hrEduPersonPrimaryAffiliation': ['student'],
+            'hrEduPersonScienceArea': ['strojarstvo'],
+            'hrEduPersonStudentCategory': ['redoviti student:preddiplomski sveučilišni studij'],
             'cn': ['Tina Mlinarić'],
-            'hrEduPersonOIB': ['12345678902'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
             'sn': ['Mlinarić'],
             'hrEduPersonHomeOrg': ['riteh.hr'],
             'mail': ['tmlinaric@riteh.hr'],
@@ -285,7 +331,7 @@ MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
             'hrEduPersonUniqueID': ['klenic@riteh.hr'],
             'hrEduPersonPrimaryAffiliation': ['djelatnik'],
             'cn': ['Kristian Lenić'],
-            'hrEduPersonOIB': ['12345678902'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
             'sn': ['Lenić'],
             'hrEduPersonHomeOrg': ['riteh.hr'],
             'mail': ['kristian.lenic@riteh.hr'],
@@ -300,7 +346,7 @@ MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
             'hrEduPersonUniqueID': ['nlovrin@riteh.hr'],
             'hrEduPersonPrimaryAffiliation': ['djelatnik'],
             'cn': ['Neven Lovrin'],
-            'hrEduPersonOIB': ['12345678902'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
             'sn': ['Lovrin'],
             'hrEduPersonHomeOrg': ['riteh.hr'],
             'mail': ['neven.lovrin@riteh.hr'],
@@ -315,7 +361,7 @@ MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
             'hrEduPersonUniqueID': ['vmrzljak@riteh.hr'],
             'hrEduPersonPrimaryAffiliation': ['djelatnik'],
             'cn': ['Vedran Mrzljak'],
-            'hrEduPersonOIB': ['12345678902'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
             'sn': ['Mrzljak'],
             'hrEduPersonHomeOrg': ['riteh.hr'],
             'mail': ['vedran.mrzljak@riteh.hr'],
@@ -330,7 +376,7 @@ MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
             'hrEduPersonUniqueID': ['azamarin@riteh.hr'],
             'hrEduPersonPrimaryAffiliation': ['djelatnik'],
             'cn': ['Albert Zamarin'],
-            'hrEduPersonOIB': ['12345678902'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
             'sn': ['Zamarin'],
             'hrEduPersonHomeOrg': ['riteh.hr'],
             'mail': ['albert.zamarin@riteh.hr'],
@@ -345,7 +391,7 @@ MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
             'hrEduPersonUniqueID': ['tmatulja@riteh.hr'],
             'hrEduPersonPrimaryAffiliation': ['djelatnik'],
             'cn': ['Tin Matulja'],
-            'hrEduPersonOIB': ['12345678902'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
             'sn': ['Matulja'],
             'hrEduPersonHomeOrg': ['riteh.hr'],
             'mail': ['tin.matulja@riteh.hr'],
@@ -360,7 +406,7 @@ MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
             'hrEduPersonUniqueID': ['mvalcic@riteh.hr'],
             'hrEduPersonPrimaryAffiliation': ['djelatnik'],
             'cn': ['Marko Valčić'],
-            'hrEduPersonOIB': ['12345678902'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
             'sn': ['Valčić'],
             'hrEduPersonHomeOrg': ['riteh.hr'],
             'mail': ['marko.valcic@riteh.hr'],
@@ -375,7 +421,7 @@ MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
             'hrEduPersonUniqueID': ['vsucic@riteh.hr'],
             'hrEduPersonPrimaryAffiliation': ['djelatnik'],
             'cn': ['Viktor Sučić'],
-            'hrEduPersonOIB': ['12345678902'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
             'sn': ['Sučić'],
             'hrEduPersonHomeOrg': ['riteh.hr'],
             'mail': ['vsucic@riteh.hr'],
@@ -390,7 +436,7 @@ MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
             'hrEduPersonUniqueID': ['aviskovic@riteh.hr'],
             'hrEduPersonPrimaryAffiliation': ['djelatnik'],
             'cn': ['Alfredo Višković'],
-            'hrEduPersonOIB': ['12345678902'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
             'sn': ['Višković'],
             'hrEduPersonHomeOrg': ['riteh.hr'],
             'mail': ['alfredo.viskovic@riteh.hr'],
@@ -405,7 +451,7 @@ MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
             'hrEduPersonUniqueID': ['bdobras@riteh.hr'],
             'hrEduPersonPrimaryAffiliation': ['djelatnik'],
             'cn': ['Branka Dobraš'],
-            'hrEduPersonOIB': ['12345678902'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
             'sn': ['Dobraš'],
             'hrEduPersonHomeOrg': ['riteh.hr'],
             'mail': ['branka.dobras@riteh.hr'],
@@ -420,7 +466,7 @@ MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
             'hrEduPersonUniqueID': ['klenac@riteh.hr'],
             'hrEduPersonPrimaryAffiliation': ['djelatnik'],
             'cn': ['Kristijan Lenac'],
-            'hrEduPersonOIB': ['12345678902'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
             'sn': ['Lenac'],
             'hrEduPersonHomeOrg': ['riteh.hr'],
             'mail': ['Kristijan.lenac@riteh.hr'],
@@ -435,7 +481,7 @@ MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
             'hrEduPersonUniqueID': ['iipsic@riteh.hr'],
             'hrEduPersonPrimaryAffiliation': ['djelatnik'],
             'cn': ['Ivo Ipšić'],
-            'hrEduPersonOIB': ['12345678902'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
             'sn': ['Ipšić'],
             'hrEduPersonHomeOrg': ['riteh.hr'],
             'mail': ['ivo.ipsic@riteh.hr'],
@@ -450,7 +496,7 @@ MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
             'hrEduPersonUniqueID': ['gmausa@riteh.hr'],
             'hrEduPersonPrimaryAffiliation': ['djelatnik'],
             'cn': ['Goran Mauša'],
-            'hrEduPersonOIB': ['12345678902'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
             'sn': ['Mauša'],
             'hrEduPersonHomeOrg': ['riteh.hr'],
             'mail': ['goran.mausa@riteh.hr'],
@@ -465,11 +511,26 @@ MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
             'hrEduPersonUniqueID': ['sljubic@riteh.hr'],
             'hrEduPersonPrimaryAffiliation': ['djelatnik'],
             'cn': ['Sandi Ljubić'],
-            'hrEduPersonOIB': ['12345678902'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
             'sn': ['Ljubić'],
             'hrEduPersonHomeOrg': ['riteh.hr'],
             'mail': ['sandi.ljubic@riteh.hr'],
             'givenName': ['Sandi']
+            },
+        },
+    },
+    'vkirincic@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['vkirincic@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Vedran Kirinčić'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Kirinčić'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['vedran.kirincic@riteh.hr'],
+            'givenName': ['Vedran']
             },
         },
     },
