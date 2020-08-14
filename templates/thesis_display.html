@@ -1,0 +1,173 @@
+{% extends nav %}
+  
+{% block content %}
+  <br>
+  <div class="row">
+    <div class="col s12">
+      <div class="card grey lighten-3">
+        <div class="card-content">
+          <span class="card-title center"><b>{{thesis.get_type_display}} </b> <br>{{thesis.title}} / {{thesis.title_english}}</span>
+          <br>
+          <p>
+            <b>Autor: </b> <a href="{% url "profile" user_id=thesis.author.user.id %}">{{thesis.author}} </a>
+          </p>
+          <br>
+
+          <p>
+            <b>Mentor: </b><a href="{% url "profile" user_id=thesis.mentor.user.id %}">{{thesis.mentor}}</a>
+          </p>
+          <br>
+          
+          {% if thesis.komentor %}
+            <p>  
+              <b>Komentor: </b>
+              <a href="{% url "profile" user_id=thesis.komentor.user.id %}">{{thesis.komentor}}</a>  
+            </p>
+             <br>
+          {% endif %}
+
+          {% if thesis.get_type_display == 'Diplomski rad' and thesis.status == 5%}
+            <p>
+              {% for j in thesis.memberofthesiscomitee_set.all%}
+                 <b>Član povjerenstva:</b> <a href="{% url "profile" user_id=j.employee.user.id %}"> {{j}} </a> <br> <br>
+                {% endfor %}
+              
+                {% if thesis.writer_of_thesis_comitee == employee and thesis.memberofthesiscomitee_set.all.count < 3%}
+                 <a class="modal-trigger" data-target="comitee" href="#comitee" data-td_id="{{thesis.id}}">Dodaj članove povjerenstva</a>
+                {% endif %}      
+            </p>
+            {% endif %}
+        
+
+          <p>
+            <b>Studij: </b> {{thesis.study}}
+          </p>
+          <br>
+
+          <p>
+            <b>Rad:</b> <a href="/media/{{thesis.file}}" target="_blank">{{thesis.file}}</a>
+          </p>
+          <br>
+          
+          <b>Provjera izvornosti:</b> 
+              {% if thesis.verification_of_authenticity %}
+
+                {% if thesis.mentor == employee %}
+                   <a class="modal-trigger" href="#verification_modal" data-t_id1="{{thesis.id}}">Da</a><br>
+                  Preuzmi: <a href="/media/{{thesis.verification_of_authenticity}}" target="_blank">{{thesis.verification_of_authenticity}}</a> 
+                {% else %}
+                    Da <br>
+                    Preuzmi: <a href="/media/{{thesis.verification_of_authenticity}}" target="_blank">{{thesis.verification_of_authenticity}}</a> 
+                {% endif %}
+                
+              {% else %}
+                {% if thesis.mentor == employee %}
+                    <a class="modal-trigger" href="#verification_modal" data-t_id1="{{thesis.id}}">Ne</a>
+                {% else %}
+                    Nije još pregledan
+                {% endif %}
+                
+
+              {% endif %}
+            
+          </p>
+          <br>
+
+          <p>
+            <b>Sažetak:</b><br>  {{thesis.summary}}
+          </p>
+          <br>
+
+          <p>
+            <b>Sažetak(engleski):</b><br>  {{thesis.summary_english}}
+          </p>
+          <br>
+          <p>
+            <b>Datum predaje: </b> {{thesis.date| date:'d.m.Y.'}}
+          </p>
+          <br>
+          <p>
+            <b>Status: </b> <span style="color:
+            {% if thesis.status == 6 or thesis.status == 9 %}
+                red
+            {% elif thesis.status == 7%}
+                #ffa000
+            {% else %}
+                green
+            {% endif %}
+
+            "> {{thesis.get_status_display}} </span> 
+   
+            {% if student %}
+              {% if thesis.status == 1 %}
+                
+                <a href="{% url "update" thesis_id=thesis.id %}" class="btn-floating btn-small pulse blue"><i class="material-icons">  edit</i></a>
+                <br>
+              {% elif thesis.status == 3%} 
+              <form id="student_change_status" action="{% url "student_status_change" %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" id="id" name="id" value="{{thesis.id}}">
+                <a href="javascript:{}" style="color:#2196f3;" onclick="document.getElementById('student_change_status').submit(); return false;">Predaj rad predsjedniku povjerenstva</a>
+              </form> 
+              {% elif thesis.status == 7%}
+                <br>
+                <a class="modal-trigger" data-target="document_change" href="#document_change" data-thesis_id="{{thesis.id}}">Zamijeni dokument rada sa ispravljenim</a>
+              {% endif %}
+            
+            {% elif employee%}
+                {% if thesis.status == 2 and thesis.verification_of_authenticity and thesis.mentor == employee%}
+                  <form id="change_status" action="{% url "mentor_status_change" %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" id="id" name="id" value="{{thesis.id}}">
+                    <a href="javascript:{}" onclick="document.getElementById('change_status').submit(); return false;">Promijeni status u PROVJEREN</a>
+                </form>
+                {% elif thesis.president_of_thesis_comitee == employee and thesis.status == 4 or thesis.status == 7 %}
+                  
+                    <a class="modal-trigger" data-target="status_change" href="#status_change" data-t_id="{{thesis.id}}" >Promijeni status</a>
+                  
+                {% endif %}
+            {% endif %}
+          </p>
+          
+
+       {% if thesis.status == 5 or thesis.status > 7%}
+          <br>
+          <p>
+            <b>Konačna ocjena:</b>         
+              {% if thesis.final_grade %}
+                {{thesis.final_grade}}
+              {% else %}
+
+                Nije unesena <br>    
+                {% if thesis.mentor == employee and thesis.get_type_display == 'Završni rad' %}
+                   <a class="modal-trigger" data-target="final_grade" href="#final_grade" data-tfg_id="{{thesis.id}}" >Unesi konačnu ocijenu</a>  
+                {% elif thesis.get_type_display == 'Diplomski rad'%} 
+                  {% for j in thesis.memberofthesiscomitee_set.all%}
+                    {% if employee == j.employee %}
+                      {% if  j.grade == None  %}
+                        <a class="modal-trigger" data-target="grade" href="#grade" data-tg_id="{{thesis.id}}" >Ocijeni rad kao član povjerenstva</a>
+                      {% else %}
+                        Kao član povjerenstva ocijenili ste rad: Ocijena rada({{j.grade}}), Ocijena obrane({{j.defense_grade}}) 
+                      {% endif %}
+                      
+
+                    {% endif %}
+                  {% endfor %}     
+                {% endif %}       
+              {% endif %}
+            <br>
+
+
+            
+          </p>
+        {% endif %}
+        </div> 
+
+     
+    </div>
+  </div>
+
+
+  {% endblock content %}
+
+   </div>
