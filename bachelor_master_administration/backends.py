@@ -5,6 +5,8 @@ from django.conf import settings
 from django.core.exceptions import (ImproperlyConfigured,
                                     MultipleObjectsReturned)
 
+from administration.models import Student, Employee
+
 logger = logging.getLogger('djangosaml2')
 
 class CustomSaml2Backend(Saml2Backend):
@@ -39,11 +41,20 @@ class CustomSaml2Backend(Saml2Backend):
             # Create new one if desired by settings
             if create_unknown_user:
                 user = UserModel(**{ user_lookup_key: user_lookup_value })
-                user.save()
+
+               	user.save()
                 if attributes.get('hrEduPersonPrimaryAffiliation', [''])[0]=='student':
-                	user.roles.add(1)
+                    student = Student(user=user)
+                    student.area_of_study = attributes.get('hrEduPersonScienceArea', [''])[0]
+                    student.category = attributes.get('hrEduPersonStudentCategory', [''])[0]
+                    student.jmbag = attributes.get('hrEduPersonUniqueNumber', [''])[0]
+
+                    student.save()
                 else:
-                	user.roles.add(2)
+                	employee = Employee(user=user)
+                	employee.save()
+                
+                
                 created = True
                 logger.debug('New user created: %s', user)
             else:
