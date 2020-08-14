@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Administracija završnih i diplomskih radova - Index</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+	<div class="container">
+		
+	{% if document_form %}
+		<h4>Greška!</h4>
+		Došlo je do greške prilikom validacije obrasca: <br> <br>
+		Greška: <span style="color:red;">{{document_form.file.errors}}</span>
+
+	{% elif comitee_form%}
+		<h4>Greška!</h4>
+		Došlo je do greške prilikom validacije obrasca: <br> <br>
+		Greška: <br>
+    <span style="color:red;">{{comitee_form.member2.errors}}</span> <br>
+	{% elif user.is_authenticated %}
+		<h4>Greška!</h4>
+		<p>Na ovu web-stranicu došli ste greškom. Molimo unesite u web preglednik adresu aplikacije u koju se želite prijaviti korištenjem AAI@EduHr elektroničkog identiteta.</p>
+	{% else %}	
+		 <h5>Morate se prijaviti korištenjem AAI@EduHr elektroničkog identiteta kako bi pristupili ovoj web stranici</h5>
+		 <br>
+		 <a href="{% url "login" %}">Prijava</a>
+	{% endif %}
+	
+	</div>
+</body>
+</html>
