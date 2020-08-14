@@ -1,0 +1,215 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Student Index</title>
+
+  	<meta name="viewport" content="width=device-width, initial-scale=1"/> 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+    <script>
+
+      	$(document).ready(function(){
+      		$(window).on('popstate', function() {
+      			location.reload(true);
+   			});
+			$('select').select2({width: "100%"});
+
+			$(".dropdown-trigger").dropdown({
+		    	coverTrigger: false,
+		    	constrainWidth: false
+		 	});
+	    	$(document).ready(function(){
+    			$('.sidenav').sidenav();
+  			});
+		 	$('.tabs').tabs();
+
+		 	$('.modal').modal();
+
+
+		});
+
+		$(document).on("click", ".modal-trigger", function () {
+			var content = $(this).data('thesis_id');
+			$('#thesis_id').val(content);
+		});
+       
+
+    </script>
+    <link rel="stylesheet" href="{% static "css/style.css" %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0-alpha.4/css/materialize.min.css" rel="stylesheet"/>
+    <style>
+
+    	label {
+			font-size: 20px;
+		}
+
+    </style>
+
+</head>
+<body>
+	
+	<nav>
+		<div class="nav-wrapper blue">
+		    <a href="{% url "index" %}" class="left brand-logo"><img src="{% static "riteh-logo2.jpg" %}" width="80%" alt="" class="circle responsive-img"></a>
+			<a href="#mobile-demo" data-target="mobile-demo" class="sidenav-trigger right"><i class="material-icons">menu</i>
+		    <ul id="nav-mobile" class="right hide-on-med-and-down">
+		        <li><a href="{% url 'index' %}">{{ user.first_name }} {{ user.last_name }}</a></li>
+		        <li><a href="{% url 'profile' user_id=user.id %}"><i class="material-icons">account_circle</i></a></li>
+		        <li><a class='dropdown-trigger' href="{% url 'notifications' %}"  data-target='dropdown1'>
+				    <div class="row">
+					    <div class="col s1">
+							<i class="material-icons white-text notif">notifications</i>
+					    </div>
+					    <div class="col s1">
+				     		{% if notifications_unread%}					         			
+					 			<span class="badge red" style="color:white;">{{notifications_unread.count}}</span>
+					         {% else %}
+								&nbsp;
+					         {% endif %}			  					
+					    </div>		
+				    </div>
+				</a></li>
+				
+				<!-- Dropdown Structure -->
+				<ul id='dropdown1' class='dropdown-content'>
+					{% if notifications %}
+						{% for i in notifications %}	
+						   	<li> <a href="{% url 'notifications' %}?id={{i.id}}" style="color:black;{% if i.status == 1 %} background-color:#ffcdd2;{% endif %}">{{i.title}} <br>
+						   	<span style="color:grey">{{i.date |  date:'d.m.Y. H:j'}}</span>
+							</a></li>
+							
+						{% endfor %}
+					{% else %}
+					  	<li><a style="color:black;">Nemate nijednu obavijest</li>
+					{% endif %}
+					<li class = "divider"></li>
+					<li><a href="{% url 'notifications_mark_read' %}" style="color:#4fc3f7;">Označi sve kao pročitano <i class="material-icons">check</i></a></li>
+					<li class = "divider"></li>
+					<li><a href="{% url 'notifications' %}" style="color:#4fc3f7;" class="center">Prikaži sve</a></li>
+				</ul>
+
+			  	<li><a href="{% url "saml2_logout" %}"><i class="material-icons">exit_to_app</i></a></li>
+			</ul>
+			<ul class="sidenav" id="mobile-demo">
+		      	<li><a href="{% url 'index' %}">{{ user.first_name }} {{ user.last_name }}</a></li>
+		      	<li><a href="{% url 'notifications' %}"><i class="material-icons">notifications</i>
+					{% if notifications_unread%}
+						<span class="badge red" style="color:white;">{{notifications_unread.count}}</span>
+					{% endif %}
+					Obavijesti
+				</a></li>
+		        <li><a href="{% url 'profile' user_id=user.id%}"><i class="material-icons">account_circle</i> Profil</a></li>
+		        <li><a href="{% url 'saml2_logout' %}"><i class="material-icons">exit_to_app</i>Odjava</a></li>
+  			</ul>
+		</div>
+
+	</nav>
+
+	<div class="container">
+		{% block content %}
+			{% if thesis %}
+
+	    		<ul>
+
+	    		{% for i in thesis %}
+
+	    			<div class="col s12 m7">				
+	    				<div class="card horizontal" style="background-color:#eeeeee;">
+
+	      					<div class="card-stacked">
+	        					<div class="card-content">
+	          						<p><b>Naslov: </b> <a href="{% url "thesis_display" thesis_id=i.id%}">{{i.title}}</a></p>
+	          						<p><b>Vrsta rada: </b> {{i.get_type_display}}</p>
+	          						<p><b>Mentor: </b> <a href="{% url "profile" user_id=i.mentor.user.id %}">{{i.mentor}}</a></p>
+	       					 	</div>
+	        					<div class="card-action right-align">
+	        						<b style="{% if i.status == 6 %}
+														color:red;
+													{% elif i.status == 7 %}
+														color:#ffa000 ;
+													{% else %}
+													color:green;
+													{% endif %}">
+									{{i.get_status_display}}</b> 
+	        						{% if i.status == 1%}
+	        							
+	  									<p><a href="{% url "update" thesis_id=i.id %}" class="btn-floating btn-large pulse blue"><i class="material-icons">  edit</i></a></p>
+	            						<br>	        						
+	            					{% elif i.status == 3%}
+	            					<p>
+							          <form id="student_change_status" action="{% url "student_status_change" %}" method="post">
+							            {% csrf_token %}
+							               <input type="hidden" id="id" name="id" value="{{i.id}}">
+							            <a href="javascript:{}" style="color:#2196f3;" onclick="document.getElementById('student_change_status').submit(); return false;">Predaj rad predsjedniku povjerenstva</a>
+							          </form>
+							          </p>
+			
+							         {% endif %}
+	        					</div>
+	        				</div>
+	   					</div>
+	  				</div>
+
+	    		{% endfor %}
+
+	    		</ul>
+
+			{% else %}
+				<br>
+				<div class="row">
+				    <div class="col s12">
+				      <div class="card horizontal">
+				      	<div class="card-stacked">
+				        <div class="card-content">
+				          <p>Nemate spremljen 
+				          {% if 'preddiplomski' in student.category%}
+				          	završni
+				          {% else %}
+				          	diplomski
+				          {% endif %}
+				      	 	rad </p>
+				        </div>
+				        <div class="card-action">
+				          <p><a href="{% url "submission" %}" class="btn-floating btn-large pulse blue"><i class="material-icons">add</i></a> <b>Dodaj rad</b></p>
+				        </div>
+				      </div>
+				    </div>
+				    </div>
+				</div>
+
+			{% endif %} 
+	 	
+	 	{% endblock content %}
+	</div>
+
+<!-- modal za promjenu dokumenta rada ako je status u doradi -->
+<div id="document_change" class="modal modal-fixed-header">
+	<nav class="blue">
+		<div class="modal-header center">ISPRAVAK RADA</div>
+	</nav>
+	<div class="modal-content">
+		<div class="container">
+			<form action="{% url "student_document_change" %}" method="post" enctype= "multipart/form-data">
+				{% csrf_token %}
+				<label>{{change_document_form.file.label}}(pdf):
+				<h6>(naziv: ime_prezime_vrsta-rada.pdf)</h6></label>
+				
+				{{change_document_form.file}}
+				{{change_document_form.thesis_id}}
+				<br><br>
+				<button class="waves-effect waves-light btn-large blue right" type="submit" name="action" value="promijeni">PROMIJENI DATOTEKU RADA</button>
+			<br><br>
+			</form>
+		<br><br>
+			
+		</div>	
+	</div>		
+</div>
+</body>
+</html>
+
