@@ -83,7 +83,7 @@
     </style>
 </head>
 <body>
-
+<header>
 	<nav class="nav-extended blue">
 	    <div class="nav-wrapper blue">
 	      	<a href="{% url 'index' %}" class="left brand-logo"><img src="{% static 'riteh-logo2.jpg' %}" width="80%" alt="" class="circle responsive-img"></a>
@@ -149,7 +149,8 @@
 			    </div>
 	    	{% endif %}
     </nav>
-
+</header>
+<main>
 	<div class="container">
 		{% block content %}
 		
@@ -163,7 +164,7 @@
 
 				{% block foo %}										
 					{% if  'mentor' == i.get_id_display%}
-						{% with thesis=employee.mentor.filter role=i %}
+						{% with thesis=employee.mentor.all role=i %}
    							{% include "employee/mentor_thesis_display.html" %}
 						{% endwith %}										
 					{% elif  'komentor' == i.get_id_display%}
@@ -276,5 +277,19 @@
 
 	
 </div>
+</main>
+       <footer class="page-footer grey darken-1">
+          <div class="container">
+          	Stranica fakulteta: <a style="color:#81d4fa;" href="http://www.riteh.uniri.hr/">www.riteh.uniri.hr</a>
+          </div>
+          <div class="footer-copyright">
+            <div class="container">
+            © Riteh 2020., Sva prava pridržana
+
+
+            <div class="right" href="#!">Programiranje: Valentina Ecimović</div>
+            </div>
+          </div>
+        </footer>
 </body>
 </html>
