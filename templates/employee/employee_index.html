@@ -22,6 +22,7 @@
 					"sSearch": "Pretraži:",
 					"sLengthMenu": "Prikaži _MENU_ radova",
 					"sInfo" : "Prikazuje _START_ do _END_ od _TOTAL_ radova",
+					"sEmptyTable": "Trenutno nema nijednog predanog rada",
 					"oPaginate":{
 						"sPrevious": "Prijašnja stranica",
 						"sNext": "Slijedeća stranica",
@@ -172,29 +173,59 @@
    							{% include "employee/mentor_thesis_display.html" %}
 						{% endwith %}										
 					{% elif  'predsjednik'  in i.get_id_display %}
-						{% with thesis=employee.predsjednik_povjerenstva.all role=i %}
-							{% if 'diplomske' in i.get_id_display %}
-   								{% include "employee/masters_thesis_display.html" %}
-							{% else %}
-								{% include "employee/bachelor_thesis_display.html" %}
-							{% endif %}
-						{% endwith %}												
+						{% if "završne" in i.get_id_display %}
+							{% for j in employee.predsjednik.all %}
+								{% if "Preddiplomski" in j.study.get_id_display %}
+									{% with thesis=j.study.thesis_set.all role=i %}			
+										{% include "employee/bachelor_thesis_display.html" %}	
+								{% endwith %}
+								{% endif %}
+							{% endfor %}
+						{% else %}
+							{% for j in employee.predsjednik.all %}
+								{% if "Preddiplomski" not in j.study.get_id_display %}
+									{% with thesis=j.study.thesis_set.all role=i %}			
+										{% include "employee/masters_thesis_display.html" %}	
+									{% endwith %}
+								{% endif %}
+							{% endfor %}
+						{% endif %}										
 					{% elif  'zamjenik'  in i.get_id_display %}
-						{% with thesis=employee.zamjenik_povjerenstva.all role=i %}
-							{% if 'diplomske' in i.get_id_display %}
-   								{% include "employee/masters_thesis_display.html" %}
-							{% else %}
-								{% include "employee/bachelor_thesis_display.html" %}
-							{% endif %}
-						{% endwith %}												
-					{% elif  'djelovođa'  in i.get_id_display  %}
-						{% with thesis=employee.djelovođa_povjerenstva.all role=i %}
-							{% if 'diplomske' in i.get_id_display %}
-   								{% include "employee/masters_thesis_display.html" %}
-							{% else %}
-								{% include "employee/bachelor_thesis_display.html" %}
-							{% endif %}
-						{% endwith %}										
+						{% if "završne" in i.get_id_display %}
+							{% for j in employee.zamjenik.all %}
+								{% if "Preddiplomski" in j.study.get_id_display %}
+									{% with thesis=j.study.thesis_set.all role=i %}			
+										{% include "employee/bachelor_thesis_display.html" %}	
+								{% endwith %}
+								{% endif %}
+							{% endfor %}
+						{% else %}
+							{% for j in employee.zamjenik.all %}
+								{% if "Preddiplomski" not in j.study.get_id_display %}
+									{% with thesis=j.study.thesis_set.all role=i %}			
+										{% include "employee/masters_thesis_display.html" %}	
+									{% endwith %}
+								{% endif %}
+							{% endfor %}
+						{% endif %}										
+					{% elif  'djelovođa'  in i.get_id_display %}
+						{% if "završne" in i.get_id_display %}
+							{% for j in employee.djelovoda.all %}
+								{% if "Preddiplomski" in j.study.get_id_display %}
+									{% with thesis=j.study.thesis_set.all role=i %}			
+										{% include "employee/bachelor_thesis_display.html" %}	
+								{% endwith %}
+								{% endif %}
+							{% endfor %}
+						{% else %}
+							{% for j in employee.djelovoda.all %}
+								{% if "Preddiplomski" not in j.study.get_id_display %}
+									{% with thesis=j.study.thesis_set.all role=i %}			
+										{% include "employee/masters_thesis_display.html" %}	
+									{% endwith %}
+								{% endif %}
+							{% endfor %}
+						{% endif %}									
 			
 					{% endif %}
 

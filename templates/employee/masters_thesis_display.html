@@ -1,4 +1,4 @@
-{% if thesis %}
+
 	<table class="theses_display" class="display" style="width:100%">
 		<thead>
             <tr>
@@ -10,7 +10,10 @@
             </tr>
         </thead>
         <tbody>
+       {% if thesis %}
+
 		{% for i in thesis %}
+
 			{% if i.type == 2 and i.status > 3%}
 				
 			
@@ -26,7 +29,7 @@
 
 					{% endif %}">
 					{{i.get_status_display}}<br>
-					{% if 'predsjednik' in role.get_id_display and i.status == 4 or i.status == 7 %}
+					{% if 'predsjednik' in role.get_id_display and i.status == 4 or 'predsjednik' in role.get_id_display and i.status == 7 %}
 						<a class="modal-trigger" data-target="status_change" href="#status_change" data-t_id="{{i.id}}" id="{{i.id}}" >Promijeni status</a>
 					{% endif %}
 				</td>
@@ -55,6 +58,7 @@
 			</tr>
 			{% endif %}
 		{% endfor %}
+		{% endif %}
 		</tbody>
         <tfoot>
             <tr>
@@ -68,19 +72,6 @@
     </table>
 
 
-{% else %}
-
-	<div class="row">
-		<div class="col s12">
-			<div class="card horizontal">
-				<div class="card-content">
-				    <p>Nije pronađen nijedan diplomski rad</p>
-				</div>
-			</div>
-		</div>
-	</div>
-
-{% endif %} 
 
 
 

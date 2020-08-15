@@ -163,6 +163,7 @@ def index(request):
 			}
 
 
+
 			return render(request, 'employee/employee_index.html', context)
 		else: 
 			return render(request, 'error.html')
@@ -189,75 +190,14 @@ def insert_thesis_into_db(request, form,student, thesis_id=None):
 		thesis.file = form.cleaned_data.get("file")
 	thesis.remark = form.cleaned_data.get("remark")
 	thesis.author = student
-	
-					
+
 	if 'Diplomski' in thesis.study.__str__():
 		rad = "DIPLOMSKI"
 		thesis.type = 2
-		if 'sveučilišni studij strojarstvo' in thesis.study.__str__():
-			president_id = 1
-			deputy_id = 2
-			writer_id = 3
-		elif 'sveučilišni studij brodogradnja' in thesis.study.__str__():
-			president_id = 4
-			deputy_id = 5
-			writer_id = 6
-		elif 'sveučilišni studij elektrotehnika' in thesis.study.__str__():
-			president_id = 7
-			deputy_id = 8
-			writer_id = 9
-		elif 'sveučilišni studij računarstvo' in thesis.study.__str__():		
-			president_id = 10
-			deputy_id = 11
-			writer_id = 12
-			
 	else:
 		thesis.type = 1
 		rad = "ZAVRŠNI"
-		if 'sveučilišni studij strojarstvo' in thesis.study.__str__():
-			president_id = 13
-			deputy_id = 14
-			writer_id = 15
-		elif 'sveučilišni studij brodogradnja' in thesis.study.__str__():
-			president_id = 16
-			deputy_id = 17
-			writer_id = 18
-		elif 'sveučilišni studij elektrotehnika' in thesis.study.__str__():
-			president_id = 19
-			deputy_id = 20
-			writer_id = 21
-		elif 'sveučilišni studij računarstvo' in thesis.study.__str__():
-			president_id = 22
-			deputy_id = 23
-			writer_id = 24
-		elif 'stručni studij strojarstvo' in thesis.study.__str__():
-			president_id = 25
-			deputy_id = 26
-			writer_id = 27
-		elif 'stručni studij brodogradnja' in thesis.study.__str__():
-			president_id = 28
-			deputy_id = 29
-			writer_id = 30
-		elif 'stručni studij elektrotehnika' in thesis.study.__str__():
-			president_id = 31
-			deputy_id = 32
-			writer_id = 33
-
 	
-	president_role = Role.objects.get(id=president_id)
-	deputy_role = Role.objects.get(id=deputy_id)
-	writer_role = Role.objects.get(id=writer_id)
-
-	president = Employee.objects.get(roles=president_role)
-	deputy = Employee.objects.get(roles=deputy_role)
-	writer = Employee.objects.get(roles=writer_role)
-					
-	thesis.president_of_thesis_comitee = president
-	thesis.deputy_of_thesis_comitee = deputy
-	thesis.writer_of_thesis_comitee = writer
-
-
-
 	if request.POST['action'] == 'Predaj':				
 		thesis.status = 2
 		thesis.mentor.roles.add(Role.objects.get(id=34))
@@ -719,7 +659,7 @@ def president_status_change(request):
 			student_notification.content += "Objašnjenje: <br> {}".format(form.cleaned_data.get('explanation'))
 			student_notification.save()	
 
-			president_notification = Notification(user=thesis.president_of_thesis_comitee.user)
+			president_notification = Notification(user=thesis.study.studycomitee.president.user)
 			president_notification.title = STATUS_CHANGE_TITLE
 			president_notification.content = STATUS_CHANGER_CONTENT.format(thesis.get_status_display(),thesis.id, thesis.title)
 			president_notification.save()
@@ -748,17 +688,17 @@ def student_status_change(request):
 		student_notification.content = STUDENT_TO_PRESIDENT_SUBMISSION_CONTENT.format(thesis.id, thesis.title)
 		student_notification.save()	
 
-		president_notification = Notification(user=thesis.president_of_thesis_comitee.user)
+		president_notification = Notification(user=thesis.study.studycomitee.president.user)
 		president_notification.title = SUBMISSION_TITLE.format(rad,"predsjednik povjerenstva")
 		president_notification.content = SUBMISSION_CONTENT.format(thesis.author.user.id,thesis.author.user,thesis.id, thesis.title)
 		president_notification.save()
 
-		deputy_notification = Notification(user=thesis.deputy_of_thesis_comitee.user)
+		deputy_notification = Notification(user=thesis.study.studycomitee.deputy.user)
 		deputy_notification.title = SUBMISSION_TITLE.format(rad,"zamjenik povjerenstva")
 		deputy_notification.content = SUBMISSION_CONTENT.format(thesis.author.user.id,thesis.author.user,thesis.id, thesis.title)
 		deputy_notification.save()
 
-		writer_notification = Notification(user=thesis.writer_of_thesis_comitee.user)
+		writer_notification = Notification(user=thesis.study.studycomitee.writer.user)
 		writer_notification.title = SUBMISSION_TITLE.format(rad,"djelovođa povjerenstva")
 		writer_notification.content = SUBMISSION_CONTENT.format(thesis.author.user.id,thesis.author.user,thesis.id, thesis.title)
 		writer_notification.save()
@@ -789,7 +729,7 @@ def student_document_change(request):
 			student_notification.content = STUDENT_CHANGED_DOCUMENT_CONTENT.format(thesis.id, thesis.title)
 			student_notification.save()	
 
-			president_notification = Notification(user=thesis.president_of_thesis_comitee.user)
+			president_notification = Notification(user=thesis.study.studycomitee.president.user)
 			president_notification.title = CHANGED_DOCUMENT_TITLE
 			president_notification.content = PRESIDENT_CHANGED_DOCUMENT_CONTENT.format(thesis.id, thesis.title)
 			president_notification.save()
@@ -831,7 +771,7 @@ def add_comitee(request):
 				komentor.save()
 			
 			
-			writer_notification = Notification(user=thesis.writer_of_thesis_comitee.user)
+			writer_notification = Notification(user=thesis.study.studycomitee.writer.user)
 			writer_notification.title = ADDED_COMITEE_TITLE
 			writer_notification.content = ADDED_COMITEE_CONTENT.format(thesis.id, thesis.title)	
 			writer_notification.save()

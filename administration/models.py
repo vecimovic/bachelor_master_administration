@@ -198,6 +198,22 @@ class Study(models.Model):
 	class Meta:
 		verbose_name_plural = "studies"
 
+class StudyComitee(models.Model):
+	"""
+    Pohranjuje povjerenstva za studije na fakultetu,
+    u relaciji sa: :model:`administration.Employee`, :model:`administration.Study`.
+    """ 
+	study = models.OneToOneField(Study,on_delete=models.CASCADE)
+	president = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='predsjednik')
+	deputy = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='zamjenik')
+	writer = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='djelovoda')
+
+	def __str__(self):
+		"""
+		Prikazuje povjerenstvo za studij u bazi u obliku stringa kao ime studija.
+		"""
+		return self.study.get_id_display()
+
 class Thesis(models.Model):
 	"""
     Pohranjuje završne i diplomske radove u sustavu,
@@ -243,9 +259,6 @@ class Thesis(models.Model):
 	author = models.ForeignKey(Student, on_delete=models.CASCADE)
 	mentor = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='mentor')
 	komentor = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='komentor', blank=True, null=True)
-	president_of_thesis_comitee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='predsjednik_povjerenstva', null=True)
-	deputy_of_thesis_comitee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='zamjenik_povjerenstva', null=True)
-	writer_of_thesis_comitee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='djelovođa_povjerenstva', null=True)
 	study = models.ForeignKey(Study, on_delete=models.CASCADE)
 	file = models.FileField(blank=True)
 	type = models.PositiveSmallIntegerField(choices=TYPE_CHOICES)

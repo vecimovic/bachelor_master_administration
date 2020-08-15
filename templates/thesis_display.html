@@ -27,14 +27,22 @@
           {% endif %}
 
           {% if thesis.get_type_display == 'Diplomski rad' and thesis.status == 5%}
+          <b> POVJERENSTVO ZA OBRANU:</b>
             <p>
+              <ul>
               {% for j in thesis.memberofthesiscomitee_set.all%}
-                 <b>Član povjerenstva:</b> <a href="{% url "profile" user_id=j.employee.user.id %}"> {{j}} </a> <br> <br>
+                <li><b>Član povjerenstva:</b> <a href="{% url "profile" user_id=j.employee.user.id %}"> {{j}} </a> </li> 
                 {% endfor %}
-              
-                {% if thesis.writer_of_thesis_comitee == employee and thesis.memberofthesiscomitee_set.all.count < 3%}
+
+                {% if not thesis.memberofthesiscomitee_set.all %}
+                  <li>Članovi nisu uneseni</li>
+                {% endif %}
+              </ul>
+                {% if thesis.study.studycomitee.writer == employee and thesis.memberofthesiscomitee_set.all.count < 3%}
                  <a class="modal-trigger" data-target="comitee" href="#comitee" data-td_id="{{thesis.id}}">Dodaj članove povjerenstva</a>
-                {% endif %}      
+                  <br>
+                {% endif %}   
+                 
             </p>
             {% endif %}
         
@@ -115,14 +123,15 @@
               {% endif %}
             
             {% elif employee%}
+
                 {% if thesis.status == 2 and thesis.verification_of_authenticity and thesis.mentor == employee%}
                   <form id="change_status" action="{% url "mentor_status_change" %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" id="id" name="id" value="{{thesis.id}}">
                     <a href="javascript:{}" onclick="document.getElementById('change_status').submit(); return false;">Promijeni status u PROVJEREN</a>
                 </form>
-                {% elif thesis.president_of_thesis_comitee == employee and thesis.status == 4 or thesis.status == 7 %}
-                  
+                {% elif thesis.study.studycomitee.president == employee and thesis.status == 4 or thesis.study.studycomitee.president == employee and thesis.status == 7 %}
+                  <br>
                     <a class="modal-trigger" data-target="status_change" href="#status_change" data-t_id="{{thesis.id}}" >Promijeni status</a>
                   
                 {% endif %}
