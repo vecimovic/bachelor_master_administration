@@ -111,6 +111,7 @@ class Role(models.Model):
 
 	)
 
+
 	id = models.PositiveSmallIntegerField(choices=ROLE_CHOICES, primary_key=True)
 
 	def __str__(self):
@@ -187,7 +188,17 @@ class Study(models.Model):
 		(STRUCNI_ELEKTROTEHNIKA, 'Preddiplomski stručni studij elektrotehnika'),
 	)
 
+	#tip završnog rada
+	ZAVRSNI = 1
+	DIPLOMSKI = 2
+
+	TYPE_CHOICES = (
+		(ZAVRSNI, 'ZAVRŠNI RAD'),
+		(DIPLOMSKI, 'DIPLOMSKI RAD'),
+	)
+
 	id = models.PositiveSmallIntegerField(choices=STUDY_CHOICES, primary_key=True)
+	type = models.PositiveSmallIntegerField(choices=TYPE_CHOICES, default=ZAVRSNI)
 
 	def __str__(self):
 		"""
@@ -208,6 +219,7 @@ class StudyComitee(models.Model):
 	deputy = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='zamjenik')
 	writer = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='djelovoda')
 
+
 	def __str__(self):
 		"""
 		Prikazuje povjerenstvo za studij u bazi u obliku stringa kao ime studija.
@@ -219,14 +231,7 @@ class Thesis(models.Model):
     Pohranjuje završne i diplomske radove u sustavu,
     u relaciji sa: :model:`administration.Student`, :model:`administration.Employee`, :model:`administration.Study`.
     """ 
-	#tip
-	ZAVRSNI = 1
-	DIPLOMSKI = 2
 
-	TYPE_CHOICES = (
-		(ZAVRSNI, 'Završni rad'),
-		(DIPLOMSKI, 'Diplomski rad'),
-	)
 
 	#status
 	SPREMLJEN = 1
@@ -261,10 +266,9 @@ class Thesis(models.Model):
 	komentor = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='komentor', blank=True, null=True)
 	study = models.ForeignKey(Study, on_delete=models.CASCADE)
 	file = models.FileField(blank=True)
-	type = models.PositiveSmallIntegerField(choices=TYPE_CHOICES)
 	status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=1)
 	remark = models.TextField(blank=True)
-	date = models.DateField(default=timezone.now())
+	date = models.DateField(auto_now_add=True)
 	verification_of_authenticity = models.FileField(blank=True)
 	final_grade = models.IntegerField(blank=True,null=True)
 
@@ -309,7 +313,7 @@ class Notification(models.Model):
 	title = models.CharField(max_length=1000)
 	content = models.TextField()
 	status = models.PositiveSmallIntegerField(choices=STATUS_CHOICES, default=1)
-	date = models.DateTimeField(default=timezone.now())
+	date = models.DateTimeField(auto_now_add=True)
 
 	def __str__ (self):
 		"""

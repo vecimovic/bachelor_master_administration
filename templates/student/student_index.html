@@ -37,6 +37,17 @@
 		});
        
 
+	    function cancel() {
+	       if (confirm('Jeste li sigurni da želite odustati? \n \n Podaci/promjene neće biti sačuvane!')) {
+	           window.location.href = "{% url "index" %}";
+	       } 
+	    }
+	    function confirm_submission(){
+	    	if (confirm('Jeste li sigurni da želite predati rad?')) {
+	           thesis_form.submit()
+	       	} 
+	    }
+
     </script>
     <link rel="stylesheet" href="{% static "css/style.css" %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.3/css/materialize.min.css">
@@ -125,7 +136,7 @@
 	      					<div class="card-stacked">
 	        					<div class="card-content">
 	          						<p><b>Naslov: </b> <a href="{% url "thesis_display" thesis_id=i.id%}">{{i.title}}</a></p>
-	          						<p><b>Vrsta rada: </b> {{i.get_type_display}}</p>
+	          						<p><b>Vrsta rada: </b> {{i.study.get_type_display}}</p>
 	          						<p><b>Mentor: </b> <a href="{% url "profile" user_id=i.mentor.user.id %}">{{i.mentor}}</a></p>
 	       					 	</div>
 	        					<div class="card-action right-align">
@@ -216,12 +227,14 @@
           <div class="container">
           	Stranica fakulteta: <a style="color:#81d4fa;" href="http://www.riteh.uniri.hr/">www.riteh.uniri.hr</a>
           </div>
+
           <div class="footer-copyright">
             <div class="container">
-            © Riteh 2020., Sva prava pridržana
-
-
+            	
+            © Riteh 2020.
+			
             <div class="right" href="#!">Programiranje: Valentina Ecimović</div>
+            
             </div>
           </div>
         </footer>

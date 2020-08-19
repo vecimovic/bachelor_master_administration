@@ -6,7 +6,7 @@
     <div class="col s12">
       <div class="card grey lighten-3">
         <div class="card-content">
-          <span class="card-title center"><b>{{thesis.get_type_display}} </b> <br>{{thesis.title}} / {{thesis.title_english}}</span>
+          <span class="card-title center"><b>{{thesis.study.get_type_display}} </b> <br>{{thesis.title}} / {{thesis.title_english}}</span>
           <br>
           <p>
             <b>Autor: </b> <a href="{% url "profile" user_id=thesis.author.user.id %}">{{thesis.author}} </a>
@@ -26,7 +26,7 @@
              <br>
           {% endif %}
 
-          {% if thesis.get_type_display == 'Diplomski rad' and thesis.status == 5%}
+          {% if thesis.study.type == 2 and thesis.status == 5 or thesis.study.type == 2 and thesis.status > 7%}
           <b> POVJERENSTVO ZA OBRANU:</b>
             <p>
               <ul>
@@ -148,9 +148,9 @@
               {% else %}
 
                 Nije unesena <br>    
-                {% if thesis.mentor == employee and thesis.get_type_display == 'Završni rad' %}
+                {% if thesis.mentor == employee and thesis.study.type == 1 %}
                    <a class="modal-trigger" data-target="final_grade" href="#final_grade" data-tfg_id="{{thesis.id}}" >Unesi konačnu ocijenu</a>  
-                {% elif thesis.get_type_display == 'Diplomski rad'%} 
+                {% elif thesis.study.type == 2%} 
                   {% for j in thesis.memberofthesiscomitee_set.all%}
                     {% if employee == j.employee %}
                       {% if  j.grade == None  %}

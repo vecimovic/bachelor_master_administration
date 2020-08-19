@@ -10,7 +10,7 @@
         <tbody>
         {% if thesis %}
 		{% for i in thesis %}
-			{% if i.type == 1 and i.status > 3%}
+			{% if i.study.type == 1 and i.status > 3%}
 			<tr>
 				<td><a href="{% url "profile" user_id=i.author.user.id %}">{{i.author}} </a></td>
 				<td><a href="{% url "thesis_display" thesis_id=i.id %}">{{i.title}}</a></td>

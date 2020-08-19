@@ -13,16 +13,16 @@ from django.core.mail import send_mail
 # Create your views here.
 
 #naslovi i sadržaji svih obavijesti
-SUBMISSION_TITLE = 'PREDAN {} RAD, ULOGA: {}'
+SUBMISSION_TITLE = 'PREDAN {}, ULOGA: {}'
 SUBMISSION_CONTENT = 'Korisnik/ca <a href="/profil/{}/">{}</a> predao/la vam je rad kojemu \
 možete pristupiti na sljedećoj poveznici <a href="/prikaz/{}/">{}</a> <br> <br> '
 
-STUDENT_TO_MENTOR_SUBMISSION_TITLE = 'PREDALI STE {} RAD MENTORU'
+STUDENT_TO_MENTOR_SUBMISSION_TITLE = 'PREDALI STE {} MENTORU'
 STUDENT_TO_MENTOR_SUBMISSION_CONTENT = 'Uspješno ste predali svoj rad mentoru. Status rada možete pratiti ovdje \
  <a href="/prikaz/{}/">{}</a>'
 
-STUDENT_TO_PRESIDENT_SUBMISSION_TITLE = 'PREDALI STE {} RAD PREDSJEDNIKU POVJERENSTVA'
-STUDENT_TO_PRESIDENT_SUBMISSION_CONTENT = 'Uspješno ste predali svoj rad predjedniku povjerenstva. Status rada možete pratiti ovdje \
+STUDENT_TO_PRESIDENT_SUBMISSION_TITLE = 'PREDALI STE {} PREDSJEDNIKU POVJERENSTVA'
+STUDENT_TO_PRESIDENT_SUBMISSION_CONTENT = 'Uspješno ste predali svoj rad predsjedniku povjerenstva za vaš studij. Status rada možete pratiti ovdje \
  <a href="/prikaz/{}/">{}</a>'
 
 VERIFICATION_TITLE = 'IZVRŠENA PROVJERA IZVORNOSTI'
@@ -61,8 +61,8 @@ STUDENT_MASTER_GRADE_CONTENT = 'Članovi povjerenstva unijeli su ocjene za vaš 
 <br> <br>Konačna ocjena: <b>{}</b> <br> Status rada: <b>{}</b> <br> <br> Ocjene članova: <br>'
 
 CHANGED_DOCUMENT_TITLE = 'PROMJENA DOKUMENTA RADA'
-STUDENT_CHANGED_DOCUMENT_CONTENT = 'Uspješno ste promijenili datoteku rada za <a href="/prikaz/{}/">{}</a>'
-PRESIDENT_CHANGED_DOCUMENT_CONTENT = 'Izvršena je promjena datoteke za rad <a href="/prikaz/{}/">{}</a> u ispravljenu verziju'
+STUDENT_CHANGED_DOCUMENT_CONTENT = 'Uspješno ste promijenili datoteku rada za <a href="/prikaz/{}/">{}</a>.'
+PRESIDENT_CHANGED_DOCUMENT_CONTENT = 'Izvršena je promjena datoteke za rad <a href="/prikaz/{}/">{}</a> u ispravljenu verziju.'
 
 def login(request):
 	"""
@@ -190,13 +190,6 @@ def insert_thesis_into_db(request, form,student, thesis_id=None):
 		thesis.file = form.cleaned_data.get("file")
 	thesis.remark = form.cleaned_data.get("remark")
 	thesis.author = student
-
-	if 'Diplomski' in thesis.study.__str__():
-		rad = "DIPLOMSKI"
-		thesis.type = 2
-	else:
-		thesis.type = 1
-		rad = "ZAVRŠNI"
 	
 	if request.POST['action'] == 'Predaj':				
 		thesis.status = 2
@@ -209,20 +202,22 @@ def insert_thesis_into_db(request, form,student, thesis_id=None):
 	
 	if thesis.status == 2:
 		mentor_notification = Notification(user=thesis.mentor.user)
-		mentor_notification.title = SUBMISSION_TITLE.format(rad,"mentor")
+		mentor_notification.title = SUBMISSION_TITLE.format(thesis.study.get_type_display(),"mentor")
 		mentor_notification.content = SUBMISSION_CONTENT.format(request.user.id, thesis.author,thesis.id,thesis.title)
+		mentor_notification.content += "Napomena: <br> {}".format(thesis.remark)
 		mentor_notification.save()	
 
 		student_notification = Notification(user=thesis.author.user)
-		student_notification.title = STUDENT_TO_MENTOR_SUBMISSION_TITLE.format(rad)
+		student_notification.title = STUDENT_TO_MENTOR_SUBMISSION_TITLE.format(thesis.study.get_type_display())
 		student_notification.content = STUDENT_TO_MENTOR_SUBMISSION_CONTENT.format(thesis.id,thesis.title)
 		student_notification.save()
 
 		if thesis.komentor != None:
 			thesis.komentor.roles.add(Role.objects.get(id=35))
 			komentor_notification = Notification(user=thesis.komentor.user)
-			komentor_notification.title = SUBMISSION_TITLE.format(rad,"komentor")
+			komentor_notification.title = SUBMISSION_TITLE.format(thesis.study.get_type_display(),"komentor")
 			komentor_notification.content = SUBMISSION_CONTENT.format(request.user.id, thesis.author,thesis.id,thesis.title)
+			komentor_notification.content += "Napomena: <br> {}".format(thesis.remark)
 			komentor_notification.save()
 
 def thesis_submission(request):
@@ -586,7 +581,7 @@ def generate_verification(request):
 				'surname': thesis.author.user.last_name,
 				'jmbag': thesis.author.jmbag,
 				'study': thesis.study,
-				'type': thesis.get_type_display,
+				'type': thesis.study.get_type_display,
 				'title': thesis.title,
 				'date': time.strftime(r"%d.%m.%Y", time.localtime()),
 				'num_of_pages': pdf.getNumPages(), 
@@ -595,7 +590,7 @@ def generate_verification(request):
 				'mentor' : thesis.mentor.user,
 
 			}
-			filename = "Provjera_izvornosti_{}".format(thesis.id)
+			filename = "Provjera_izvornosti_{}.pdf".format(thesis.id)
 			pdf = render_to_pdf('verification_of_work_authenticity/verification_document.html', data)
 			thesis.verification_of_authenticity.save(filename, File(BytesIO(pdf.content)))
 
@@ -681,25 +676,24 @@ def student_status_change(request):
 		thesis = Thesis.objects.get(id=request.POST['id'])
 		thesis.status = 4
 		thesis.save()
-		if(thesis.type == 1): rad = "ZAVRŠNI"
-		else: rad = "DIPLOMSKI"
+
 		student_notification = Notification(user=thesis.author.user)
-		student_notification.title = STUDENT_TO_PRESIDENT_SUBMISSION_TITLE.format(rad)
+		student_notification.title = STUDENT_TO_PRESIDENT_SUBMISSION_TITLE.format(thesis.study.get_type_display())
 		student_notification.content = STUDENT_TO_PRESIDENT_SUBMISSION_CONTENT.format(thesis.id, thesis.title)
 		student_notification.save()	
 
 		president_notification = Notification(user=thesis.study.studycomitee.president.user)
-		president_notification.title = SUBMISSION_TITLE.format(rad,"predsjednik povjerenstva")
+		president_notification.title = SUBMISSION_TITLE.format(thesis.study.get_type_display(),"predsjednik povjerenstva")
 		president_notification.content = SUBMISSION_CONTENT.format(thesis.author.user.id,thesis.author.user,thesis.id, thesis.title)
 		president_notification.save()
 
 		deputy_notification = Notification(user=thesis.study.studycomitee.deputy.user)
-		deputy_notification.title = SUBMISSION_TITLE.format(rad,"zamjenik povjerenstva")
+		deputy_notification.title = SUBMISSION_TITLE.format(thesis.study.get_type_display(),"zamjenik povjerenstva")
 		deputy_notification.content = SUBMISSION_CONTENT.format(thesis.author.user.id,thesis.author.user,thesis.id, thesis.title)
 		deputy_notification.save()
 
 		writer_notification = Notification(user=thesis.study.studycomitee.writer.user)
-		writer_notification.title = SUBMISSION_TITLE.format(rad,"djelovođa povjerenstva")
+		writer_notification.title = SUBMISSION_TITLE.format(thesis.study.get_type_display(),"djelovođa povjerenstva")
 		writer_notification.content = SUBMISSION_CONTENT.format(thesis.author.user.id,thesis.author.user,thesis.id, thesis.title)
 		writer_notification.save()
 		return HttpResponseRedirect(request.META.get('HTTP_REFERER','/'))

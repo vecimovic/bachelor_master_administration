@@ -19,7 +19,7 @@
 			<tr>
 				<td><a href="{% url "profile" user_id=i.author.user.id %}">{{i.author}} </a></td>
 				<td><a href="{% url "thesis_display" thesis_id=i.id %}">{{i.title}}</a></td>
-				<td>{{i.get_type_display}}</td>
+				<td>{{i.study.get_type_display}}</td>
 				<td style="{% if i.status == 6 or i.status == 9 %}
 					color:red;
 					{% elif i.status == 7 %}
