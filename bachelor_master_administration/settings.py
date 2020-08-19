@@ -519,6 +519,112 @@ MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
             },
         },
     },
+    'rbasan@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['rbasan@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Robert Basan'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Basan'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['robert.basan@riteh.hr'],
+            'givenName': ['Robert']
+            },
+        },
+    },
+    'tsencic@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['tsencic@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Tomislav Senčić'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Senčić'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['tomislav.sencic@riteh.hr'],
+            'givenName': ['Tomislav']
+            },
+        },
+    },
+    'ekamenar@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['ekamenar@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Ervin Kamenar'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Kamenar'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['ervin.kamenar@riteh.hr'],
+            'givenName': ['Ervin']
+            },
+        },
+    },
+    'svlahinic@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['svlahinic@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Saša Vlahinić'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Vlahinić'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['sasa.vlahinic@riteh.hr'],
+            'givenName': ['Saša']
+            },
+        },
+    },
+    'ssladic@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['ssladic@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Saša Sladić'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Sladić'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['sasa.sladic@riteh.hr'],
+            'givenName': ['Saša']
+            },
+        },
+    },
+    'vfranki@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['vfranki@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Vladimir Franki'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Franki'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['vladimir.franki@riteh.hr'],
+            'givenName': ['Vladimir']
+            },
+        },
+    },
+    'sljubic@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['sljubic@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['djelatnik'],
+            'cn': ['Sandi Ljubić'],
+            'hrEduPersonUniqueNumber': ['12345678902'],
+            'sn': ['Ljubić'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['sandi.ljubic@riteh.hr'],
+            'givenName': ['Sandi']
+            },
+        },
+    },
+
     'vkirincic@riteh.hr': {
     'password': '0000',
     'session_info': {
