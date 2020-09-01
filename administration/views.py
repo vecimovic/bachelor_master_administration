@@ -64,6 +64,7 @@ CHANGED_DOCUMENT_TITLE = 'PROMJENA DOKUMENTA RADA'
 STUDENT_CHANGED_DOCUMENT_CONTENT = 'Uspješno ste promijenili datoteku rada za <a href="/prikaz/{}/">{}</a>.'
 PRESIDENT_CHANGED_DOCUMENT_CONTENT = 'Izvršena je promjena datoteke za rad <a href="/prikaz/{}/">{}</a> u ispravljenu verziju.'
 
+
 def login(request):
 	"""
 	Prikazuje početnu stranicu za prijavu u sustav koja preusmjerava korisnika 
@@ -826,6 +827,7 @@ def add_grade(request):
 			grade = 0
 			defense_grade = 0
 			final_grade = 0
+			
 			if not MemberOfThesisComitee.objects.filter(grade=None, defense_grade=None, thesis=thesis):
 				members = MemberOfThesisComitee.objects.filter(thesis=thesis)
 				for i in members:

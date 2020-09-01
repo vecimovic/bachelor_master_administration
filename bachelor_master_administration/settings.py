@@ -111,7 +111,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.admindocs',
     'administration',
-    #'searchableselect',
+    'django_extensions',
  
 ]
 
@@ -254,6 +254,40 @@ MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
             },
         },
     },
+    'kkrapic@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['kkrapic@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['student'],
+            'hrEduPersonScienceArea': ['računarstvo'],
+            'hrEduPersonStudentCategory': ['redoviti student:preddiplomski sveučilišni studij'],
+            'cn': ['Karlo Krapić'],
+            'hrEduPersonUniqueNumber': ['12345678901'],
+            'sn': ['Krapić'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['kkrapic@riteh.hr'],
+            'givenName': ['Karlo']
+            },
+        },
+    },
+    'lskitarelic@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['lskitarelic@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['student'],
+            'hrEduPersonScienceArea': ['računarstvo'],
+            'hrEduPersonStudentCategory': ['redoviti student:preddiplomski sveučilišni studij'],
+            'cn': ['Luka Skitarelić'],
+            'hrEduPersonUniqueNumber': ['12345678901'],
+            'sn': ['Skitarelić'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['lskitarelic@riteh.hr'],
+            'givenName': ['Luka']
+            },
+        },
+    },
 
     'pperic@riteh.hr': {
     'password': '0000',
@@ -269,6 +303,23 @@ MOCK_SAML2_USERS = getattr(settings, 'MOCK_SAML2_USERS', {
             'hrEduPersonHomeOrg': ['riteh.hr'],
             'mail': ['pperic@riteh.hr'],
             'givenName': ['Pero']
+            },
+        },
+    },
+    'iivic@riteh.hr': {
+    'password': '0000',
+    'session_info': {
+        'ava': {
+            'hrEduPersonUniqueID': ['iivic@riteh.hr'],
+            'hrEduPersonPrimaryAffiliation': ['student'],
+            'hrEduPersonScienceArea': ['brodogradnja'],
+            'hrEduPersonStudentCategory': ['redoviti student:preddiplomski stručni studij'],
+            'cn': ['Ivo Ivić'],
+            'hrEduPersonUniqueNumber': ['12345678901'],
+            'sn': ['Ivić'],
+            'hrEduPersonHomeOrg': ['riteh.hr'],
+            'mail': ['iivic@riteh.hr'],
+            'givenName': ['Ivo']
             },
         },
     },

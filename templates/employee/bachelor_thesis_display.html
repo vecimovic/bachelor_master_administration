@@ -9,29 +9,29 @@
         </thead>
         <tbody>
         {% if thesis %}
-		{% for i in thesis %}
-			{% if i.study.type == 1 and i.status > 3%}
-			<tr>
-				<td><a href="{% url "profile" user_id=i.author.user.id %}">{{i.author}} </a></td>
-				<td><a href="{% url "thesis_display" thesis_id=i.id %}">{{i.title}}</a></td>
-				<td style="{% if i.status == 6 or i.status == 9 %}
-					color:red;
-					{% elif i.status == 7 %}
-						color:#ffa000 ;
-					{% else %}
-					color:green;
+			{% for i in thesis %}
+				{% if  i.status > 3%} 
+					<tr>
+						<td><a href="{% url "profile" user_id=i.author.user.id %}">{{i.author}} </a></td>
+						<td><a href="{% url "thesis_display" thesis_id=i.id %}">{{i.title}}</a></td>
+						<td style="{% if i.status == 5 or i.status == 9%}
+							color:red;
+							{% elif i.status == 6 %}
+								color:#ffa000 ;
+							{% else %}
+							color:green;
 
-					{% endif %}">
-					{{i.get_status_display}}<br>
-					{% if 'predsjednik' in role.get_id_display and i.status == 4 or 'predsjednik' in role.get_id_display and i.status == 7 %}
+							{% endif %}">
+							{{i.get_status_display}}<br>
+							{% if 'predsjednik' in role.get_id_display and i.status == 4 or 'predsjednik' in role.get_id_display and i.status == 6 %}
 
-						<a class="modal-trigger" data-target="status_change" href="#status_change" data-t_id="{{i.id}}" id="{{i.id}}" >Promijeni status</a>
-					{% endif %}
-				</td>
-			</tr>
-			{% endif %}
+								<a class="modal-trigger" data-target="status_change" href="#status_change" data-t_id="{{i.id}}" id="{{i.id}}" >Promijeni status</a>
+							{% endif %}
+						</td>
+					</tr>
+				{% endif %}
 
-		{% endfor %}
+			{% endfor %}
 		{% endif %}
 		</tbody>
         <tfoot>

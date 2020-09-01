@@ -6,7 +6,9 @@
     <div class="col s12">
       <div class="card grey lighten-3">
         <div class="card-content">
-          <span class="card-title center"><b>{{thesis.study.get_type_display}} </b> <br>{{thesis.title}} / {{thesis.title_english}}</span>
+          <span class="card-title center"><b>{{thesis.study.get_type_display}} </b> <br>{{thesis.title}} {% if thesis.title_english %}
+            / {{thesis.title_english}}
+          {% endif %}</span>
           <br>
           <p>
             <b>Autor: </b> <a href="{% url "profile" user_id=thesis.author.user.id %}">{{thesis.author}} </a>
@@ -26,22 +28,25 @@
              <br>
           {% endif %}
 
-          {% if thesis.study.type == 2 and thesis.status == 5 or thesis.study.type == 2 and thesis.status > 7%}
-          <b> POVJERENSTVO ZA OBRANU:</b>
+          {% if thesis.study.type == 2 and thesis.status > 6 or 'stručni' in thesis.study.get_id_display and thesis.status > 6 %}
+          <b> POVJERENSTVO ZA OBRANU: </b>
+          {% if not thesis.memberofthesiscomitee_set.all %}
+                  Članovi nisu uneseni
+          {% endif %}  
+          {% if thesis.study.studycomitee.writer == employee and thesis.memberofthesiscomitee_set.all.count < 3%}
+            <br>
+              <a class="modal-trigger" data-target="comitee" href="#comitee" data-td_id="{{thesis.id}}">Dodaj članove povjerenstva</a>
+              
+          {% endif %}   
             <p>
               <ul>
               {% for j in thesis.memberofthesiscomitee_set.all%}
                 <li><b>Član povjerenstva:</b> <a href="{% url "profile" user_id=j.employee.user.id %}"> {{j}} </a> </li> 
                 {% endfor %}
 
-                {% if not thesis.memberofthesiscomitee_set.all %}
-                  <li>Članovi nisu uneseni</li>
-                {% endif %}
+
               </ul>
-                {% if thesis.study.studycomitee.writer == employee and thesis.memberofthesiscomitee_set.all.count < 3%}
-                 <a class="modal-trigger" data-target="comitee" href="#comitee" data-td_id="{{thesis.id}}">Dodaj članove povjerenstva</a>
-                  <br>
-                {% endif %}   
+
                  
             </p>
             {% endif %}
@@ -54,6 +59,10 @@
 
           <p>
             <b>Rad:</b> <a href="/media/{{thesis.file}}" target="_blank">{{thesis.file}}</a>
+              {% if thesis.status == 6 and student%}
+                <br>
+                <a class="modal-trigger" data-target="document_change" href="#document_change" data-thesis_id="{{thesis.id}}">Zamijeni dokument rada sa ispravljenim</a>
+              {% endif %}
           </p>
           <br>
           
@@ -96,9 +105,9 @@
           <br>
           <p>
             <b>Status: </b> <span style="color:
-            {% if thesis.status == 6 or thesis.status == 9 %}
+            {% if thesis.status == 5 or thesis.status == 9 %}
                 red
-            {% elif thesis.status == 7%}
+            {% elif thesis.status == 6%}
                 #ffa000
             {% else %}
                 green
@@ -117,9 +126,7 @@
                 <input type="hidden" id="id" name="id" value="{{thesis.id}}">
                 <a href="javascript:{}" style="color:#2196f3;" onclick="document.getElementById('student_change_status').submit(); return false;">Predaj rad predsjedniku povjerenstva</a>
               </form> 
-              {% elif thesis.status == 7%}
-                <br>
-                <a class="modal-trigger" data-target="document_change" href="#document_change" data-thesis_id="{{thesis.id}}">Zamijeni dokument rada sa ispravljenim</a>
+
               {% endif %}
             
             {% elif employee%}
@@ -130,7 +137,8 @@
                     <input type="hidden" id="id" name="id" value="{{thesis.id}}">
                     <a href="javascript:{}" onclick="document.getElementById('change_status').submit(); return false;">Promijeni status u PROVJEREN</a>
                 </form>
-                {% elif thesis.study.studycomitee.president == employee and thesis.status == 4 or thesis.study.studycomitee.president == employee and thesis.status == 7 %}
+                {% elif thesis.study.studycomitee.president == employee and thesis.status == 4 or thesis.study.studycomitee.president == employee and thesis.status == 6 %}
+               
                   <br>
                     <a class="modal-trigger" data-target="status_change" href="#status_change" data-t_id="{{thesis.id}}" >Promijeni status</a>
                   
@@ -139,31 +147,30 @@
           </p>
           
 
-       {% if thesis.status == 5 or thesis.status > 7%}
+       {% if thesis.status > 6%}
           <br>
           <p>
             <b>Konačna ocjena:</b>         
               {% if thesis.final_grade %}
-                {{thesis.final_grade}}
+                {{thesis.final_grade}} <br>  
               {% else %}
 
                 Nije unesena <br>    
-                {% if thesis.mentor == employee and thesis.study.type == 1 %}
-                   <a class="modal-trigger" data-target="final_grade" href="#final_grade" data-tfg_id="{{thesis.id}}" >Unesi konačnu ocijenu</a>  
-                {% elif thesis.study.type == 2%} 
+                {% if thesis.mentor == employee and 'Preddiplomski sveučilišni' in thesis.study.get_id_display and thesis.status == 7 %}
+                   <a class="modal-trigger" data-target="final_grade" href="#final_grade" data-tfg_id="{{thesis.id}}" >Unesi konačnu ocijenu</a>           
+                {% endif %}       
+              {% endif %}
+              {% if thesis.study.type == 2 or 'Preddiplomski stručni' in thesis.study.get_id_display %} 
                   {% for j in thesis.memberofthesiscomitee_set.all%}
                     {% if employee == j.employee %}
                       {% if  j.grade == None  %}
                         <a class="modal-trigger" data-target="grade" href="#grade" data-tg_id="{{thesis.id}}" >Ocijeni rad kao član povjerenstva</a>
                       {% else %}
                         Kao član povjerenstva ocijenili ste rad: Ocijena rada({{j.grade}}), Ocijena obrane({{j.defense_grade}}) 
-                      {% endif %}
-                      
-
-                    {% endif %}
-                  {% endfor %}     
-                {% endif %}       
-              {% endif %}
+                      {% endif %}  
+                    {% endif %}                
+                  {% endfor %}
+                {% endif %}
             <br>
 
 

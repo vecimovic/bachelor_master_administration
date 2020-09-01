@@ -140,13 +140,14 @@
 	          						<p><b>Mentor: </b> <a href="{% url "profile" user_id=i.mentor.user.id %}">{{i.mentor}}</a></p>
 	       					 	</div>
 	        					<div class="card-action right-align">
-	        						<b style="{% if i.status == 6 %}
-														color:red;
-													{% elif i.status == 7 %}
-														color:#ffa000 ;
-													{% else %}
-													color:green;
-													{% endif %}">
+	        						<b style="{% if i.status == 5 or i.status == 9%}
+												color:red;
+												{% elif i.status == 6 %}
+													color:#ffa000 ;
+												{% else %}
+												color:green;
+
+											  {% endif %}">
 									{{i.get_status_display}}</b> 
 	        						{% if i.status == 1%}
 	        							

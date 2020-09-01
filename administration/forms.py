@@ -3,6 +3,7 @@ from .models import Study, Thesis, Employee
 from .widgets import AdminFileWidget
 import os
 
+
 class ThesisForm(forms.ModelForm):
 	"""
 	Obrazac za predaju i ažuriranje radova
@@ -32,9 +33,6 @@ class ThesisForm(forms.ModelForm):
 		self.fields['komentor'].error_messages={'required': 'Ovo polje je obavezno'}
 		self.fields['study'].error_messages={'required': 'Ovo polje je obavezno'}
 		self.fields['title'].error_messages={'required': 'Ovo polje je obavezno'}
-		self.fields['summary'].error_messages={'required': 'Ovo polje je obavezno'}
-		self.fields['title_english'].error_messages={'required': 'Ovo polje je obavezno'}
-		self.fields['summary_english'].error_messages={'required': 'Ovo polje je obavezno'}
 
 	class Meta:
 		model = Thesis
@@ -74,15 +72,14 @@ class PresidentChangeStatusForm(forms.Form):
 	"""
 	Obrazac kojim predsjednk povjerenstva mjenja status rada
 	"""
-	PRIHVACEN = 5
-	ODBIJEN = 6
-	U_DORADI = 7
-
+	ODBIJEN = 5
+	U_DORADI = 6
+	PRIHVACEN = 7
 
 	CHOICES = {
-		(PRIHVACEN, 'PRIHVAĆEN'),
 		(ODBIJEN, 'ODBIJEN'),
 		(U_DORADI, 'U DORADI'),
+		(PRIHVACEN, 'PRIHVAĆEN'),
 
 	}
 	status = forms.ChoiceField(label='Status: ', widget=forms.Select(attrs={'id': 'status_select'}), choices=CHOICES)
@@ -94,8 +91,8 @@ class AddComitee(forms.Form):
 	Obrazac kojim djelovođa povjerenstva dodaje članove povjerenstva za obranu diplomskog rada
 	"""
 	CHOICES = Employee.objects.all()
-	member1 = forms.ChoiceField(label='Član 1: ', widget=forms.Select(attrs={'class': 'comitee_select'}), choices=((x.id, x.user.username) for x in CHOICES ))
-	member2 = forms.ChoiceField(label='Član 2: ', widget=forms.Select(attrs={'class': 'comitee_select'}), choices=((x.id, x.user.username) for x in CHOICES ))
+	member1 = forms.ChoiceField(label='Član 1: ', widget=forms.Select(attrs={'class': 'comitee_select'}), choices=((x.id, x.user.first_name + " " + x.user.last_name) for x in CHOICES ))
+	member2 = forms.ChoiceField(label='Član 2: ', widget=forms.Select(attrs={'class': 'comitee_select'}), choices=((x.id, x.user.first_name + " " + x.user.last_name) for x in CHOICES ))
 	thesis_id = forms.CharField(widget=forms.HiddenInput(attrs={'id': 'td_id'}))
 
 	def clean_member2(self):

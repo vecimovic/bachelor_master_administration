@@ -42,7 +42,6 @@
 		});
 		$('.modal').modal();
 
-		//president change status form
 		$('#status_select').select2({ dropdownParent: $('#status_change') });
 		$('.comitee_select').select2({ dropdownParent: $('#comitee') });
 		$('.grade_select').select2({ dropdownParent: $('#grade') });
@@ -51,10 +50,10 @@
 
   	
 	$(document).on("click", ".modal-trigger", function () {
-		//president change status form
+
 		var content = $(this).data('t_id');
 		$('#t_id').val(content);
-		//mentor verification form
+
 		var content1 = $(this).data('t_id1');
 		$('#t_id1').val(content1);
 
@@ -174,15 +173,15 @@
 						{% endwith %}										
 					{% elif  'predsjednik'  in i.get_id_display %}
 						{% if "završne" in i.get_id_display and "stručni" in i.get_id_display %}
-							{% for j in employee.predsjednik.all %}
+							{% for j in employee.president.all %}
 								{% if "Preddiplomski" in j.study.get_id_display and "stručni" in j.study.get_id_display%}
 									{% with thesis=j.study.thesis_set.all role=i %}			
-										{% include "employee/bachelor_thesis_display.html" %}	
+										{% include "employee/masters_thesis_display.html" %}	
 									{% endwith %}
 								{% endif %}
 							{% endfor %}
 						{% elif "završne" in i.get_id_display and "sveučilišni" in i.get_id_display %}
-							{% for j in employee.predsjednik.all %}
+							{% for j in employee.president.all %}
 								{% if "Preddiplomski" in j.study.get_id_display and "sveučilišni" in j.study.get_id_display%}
 									{% with thesis=j.study.thesis_set.all role=i %}			
 										{% include "employee/bachelor_thesis_display.html" %}	
@@ -190,7 +189,7 @@
 								{% endif %}
 							{% endfor %}
 						{% else %}
-							{% for j in employee.predsjednik.all %}
+							{% for j in employee.president.all %}
 								{% if "Preddiplomski" not in j.study.get_id_display %}
 									{% with thesis=j.study.thesis_set.all role=i %}			
 										{% include "employee/masters_thesis_display.html" %}	
@@ -200,15 +199,15 @@
 						{% endif %}										
 					{% elif  'zamjenik'  in i.get_id_display %}
 						{% if "završne" in i.get_id_display and "stručni" in i.get_id_display %}
-							{% for j in employee.zamjenik.all %}
+							{% for j in employee.deputy.all %}
 								{% if "Preddiplomski" in j.study.get_id_display and "stručni" in j.study.get_id_display %}
 									{% with thesis=j.study.thesis_set.all role=i %}			
-										{% include "employee/bachelor_thesis_display.html" %}	
+										{% include "employee/masters_thesis_display.html" %}	
 								{% endwith %}
 								{% endif %}
 							{% endfor %}
 						{% elif "završne" in i.get_id_display and "sveučilišni" in i.get_id_display %}
-							{% for j in employee.zamjenik.all %}
+							{% for j in employee.deputy.all %}
 								{% if "Preddiplomski" in j.study.get_id_display and "sveučilišni" in j.study.get_id_display %}
 									{% with thesis=j.study.thesis_set.all role=i %}			
 										{% include "employee/bachelor_thesis_display.html" %}	
@@ -216,7 +215,7 @@
 								{% endif %}
 							{% endfor %}
 						{% else %}
-							{% for j in employee.zamjenik.all %}
+							{% for j in employee.deputy.all %}
 								{% if "Preddiplomski" not in j.study.get_id_display %}
 									{% with thesis=j.study.thesis_set.all role=i %}			
 										{% include "employee/masters_thesis_display.html" %}	
@@ -226,15 +225,15 @@
 						{% endif %}										
 					{% elif  'djelovođa'  in i.get_id_display %}
 						{% if "završne" in i.get_id_display and "stručni" in i.get_id_display %}
-							{% for j in employee.djelovoda.all %}
+							{% for j in employee.writer.all %}
 								{% if "Preddiplomski" in j.study.get_id_display and "stručni" in j.study.get_id_display%}
 									{% with thesis=j.study.thesis_set.all role=i %}			
-										{% include "employee/bachelor_thesis_display.html" %}	
+										{% include "employee/masters_thesis_display.html" %}	
 								{% endwith %}
 								{% endif %}
 							{% endfor %}
 						{% elif "završne" in i.get_id_display and "sveučilišni" in i.get_id_display %}
-							{% for j in employee.djelovoda.all %}
+							{% for j in employee.writer.all %}
 								{% if "Preddiplomski" in j.study.get_id_display and "sveučilišni" in j.study.get_id_display%}
 									{% with thesis=j.study.thesis_set.all role=i %}			
 										{% include "employee/bachelor_thesis_display.html" %}	
@@ -242,7 +241,7 @@
 								{% endif %}
 							{% endfor %}
 						{% else %}
-							{% for j in employee.djelovoda.all %}
+							{% for j in employee.writer.all %}
 								{% if "Preddiplomski" not in j.study.get_id_display %}
 									{% with thesis=j.study.thesis_set.all role=i %}			
 										{% include "employee/masters_thesis_display.html" %}	

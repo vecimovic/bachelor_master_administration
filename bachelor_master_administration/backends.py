@@ -60,5 +60,6 @@ class CustomSaml2Backend(Saml2Backend):
             else:
                 logger.error('The user does not exist, model: %s, lookup: %s', UserModel._meta, user_query_args)
 
+
         return user, created
     
